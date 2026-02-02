@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College ERP</title>
+    <title>College ERP | Admin & Student Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: #F1F5F9; }
         .glass-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .hidden { display: none; }
         .active-nav { background: #EEF2FF; color: #4F46E5; border-right: 3px solid #4F46E5; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #4F46E5; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden text-slate-800">
 
     <section id="loginSection" class="fixed inset-0 bg-slate-900 z-50 flex justify-center items-center">
         <div class="bg-white p-8 rounded-xl shadow-2xl w-96">
-            <h1 class="text-3xl font-bold text-center mb-6 text-indigo-900">Schoooli ERP</h1>
+            <h1 class="text-3xl font-bold text-center mb-6 text-indigo-900">College ERP</h1>
             <form onsubmit="handleLogin(event)">
                 <input type="text" id="uid" placeholder="Email or Mobile" class="w-full border p-3 mb-4 rounded" required>
                 <input type="password" id="pass" placeholder="Password" class="w-full border p-3 mb-4 rounded" required>
@@ -30,7 +32,7 @@
 
     <section id="registerSection" class="fixed inset-0 bg-slate-100 z-50 flex justify-center items-center hidden overflow-y-auto">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl my-10">
-            <h2 class="text-2xl font-bold mb-6">Student Registration</h2>
+            <h2 class="text-2xl font-bold mb-6">Student Admission</h2>
             <form onsubmit="handleRegister(event)" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <input name="email" placeholder="Email" class="border p-2 rounded" required>
@@ -52,7 +54,7 @@
     </section>
 
     <aside class="w-64 bg-white border-r flex flex-col">
-        <div class="h-16 flex items-center px-6 border-b font-bold text-xl text-indigo-600">Schoooli</div>
+        <div class="h-16 flex items-center px-6 border-b font-bold text-xl text-indigo-600">College ERP</div>
         <nav class="flex-1 overflow-y-auto py-4" id="sidebar"></nav>
         <div class="p-4 border-t"><button onclick="logout()" class="w-full text-left px-4 py-2 text-red-500 font-bold">Logout</button></div>
     </aside>
@@ -65,35 +67,26 @@
         <div id="content" class="flex-1 overflow-auto p-8"></div>
     </main>
 
-    <div id="emailModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+    <div id="uploadModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
         <div class="bg-white p-6 rounded-lg w-[500px]">
-            <h3 class="font-bold text-lg mb-4">Compose Email</h3>
-            <form onsubmit="sendEmail(event)" class="space-y-4">
-                <select name="target" id="emailTarget" onchange="toggleEmailInput()" class="w-full border p-2 rounded">
-                    <option value="single">Single Student</option>
-                    <option value="all_students">All Students</option>
-                    <option value="all_teachers">All Teachers</option>
-                    <option value="BCA">Course: BCA</option>
-                    <option value="BSC">Course: BSC</option>
-                    <option value="B.COM">Course: B.COM</option>
-                </select>
-                <input name="singleEmail" id="singleEmailInput" placeholder="Recipient Email" class="w-full border p-2 rounded">
-                <input name="subject" placeholder="Subject" class="w-full border p-2 rounded" required>
-                <textarea name="body" rows="4" placeholder="Message (HTML supported)" class="w-full border p-2 rounded" required></textarea>
-                <div class="flex justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('emailModal').classList.add('hidden')" class="px-4 py-2 text-gray-500">Cancel</button>
-                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">Send</button>
-                </div>
-            </form>
+            <h3 class="font-bold text-lg mb-4">Bulk Upload</h3>
+            <p class="text-xs text-gray-500 mb-4">Supported: .xlsx, .csv (Headers: RegNo, Name, Status/Marks)</p>
+            <select id="uploadType" class="w-full border p-2 rounded mb-4">
+                <option value="Attendance">Attendance (RegNo, Name, Status)</option>
+                <option value="Results">Results (ExamTitle, RegNo, Name, Course, Subject, Marks, Grade)</option>
+            </select>
+            <input type="file" id="fileInput" class="w-full border p-2 rounded mb-4" accept=".csv, .xlsx">
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="document.getElementById('uploadModal').classList.add('hidden')" class="px-4 py-2 text-gray-500">Cancel</button>
+                <button onclick="processFile()" class="bg-green-600 text-white px-4 py-2 rounded">Upload & Process</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // 🟢 UPDATE THIS API URL 🟢
-        const API = "https://script.google.com/macros/s/AKfycbwk4P4Q9DZDJ6ebGI64QLcGw5HONeBhUqDQ5wSnoSSZZ39icw5wxXGgr_3ggtpgplQ/exec";
-
-        let currentUser = JSON.parse(localStorage.getItem('user'));
+        const API_URL = "https://script.google.com/macros/s/AKfycbwk4P4Q9DZDJ6ebGI64QLcGw5HONeBhUqDQ5wSnoSSZZ39icw5wxXGgr_3ggtpgplQ/exec";
         
+        let currentUser = JSON.parse(localStorage.getItem('user'));
         if (currentUser) initApp(); 
 
         function showRegister() { document.getElementById('loginSection').classList.add('hidden'); document.getElementById('registerSection').classList.remove('hidden'); }
@@ -102,12 +95,9 @@
             e.preventDefault();
             const btn = document.getElementById('loginBtn'); btn.innerText = "Verifying...";
             try {
-                const res = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'login', uid: document.getElementById('uid').value, pass: document.getElementById('pass').value }) });
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', uid: document.getElementById('uid').value, pass: document.getElementById('pass').value }) });
                 const data = await res.json();
-                if(data.success) {
-                    localStorage.setItem('user', JSON.stringify(data));
-                    location.reload();
-                } else { alert(data.message); btn.innerText = "LOGIN"; }
+                if(data.success) { localStorage.setItem('user', JSON.stringify(data)); location.reload(); } else { alert(data.message); btn.innerText = "LOGIN"; }
             } catch(e) { alert("Error"); btn.innerText = "LOGIN"; }
         }
 
@@ -115,7 +105,7 @@
             e.preventDefault();
             document.getElementById('regBtn').innerText = "Processing...";
             const fd = new FormData(e.target); const d = { action: 'registerStudent' }; fd.forEach((v,k)=>d[k]=v);
-            const res = await fetch(API, {method:'POST', body:JSON.stringify(d)});
+            const res = await fetch(API_URL, {method:'POST', body:JSON.stringify(d)});
             const r = await res.json();
             alert(r.message); if(r.success) location.reload();
         }
@@ -124,9 +114,16 @@
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('userDisplay').innerText = `${currentUser.name} (${currentUser.role})`;
             
-            const menu = currentUser.role === 'Admin' 
-                ? [{id:'home',icon:'fa-chart-pie',l:'Dashboard'}, {id:'students',icon:'fa-users',l:'Students'}, {id:'teachers',icon:'fa-chalkboard-user',l:'Teachers'}, {id:'approvals',icon:'fa-check',l:'Approvals'}, {id:'communication',icon:'fa-envelope',l:'Communication'}, {id:'settings',icon:'fa-cog',l:'Settings'}]
-                : [{id:'home',icon:'fa-home',l:'My Profile'}, {id:'settings',icon:'fa-cog',l:'Settings'}];
+            const menu = currentUser.role === 'Admin' || currentUser.role === 'Teacher'
+                ? [
+                    {id:'home',icon:'fa-chart-pie',l:'Dashboard'}, 
+                    {id:'students',icon:'fa-user-graduate',l:'Students'}, 
+                    {id:'teachers',icon:'fa-chalkboard-user',l:'Teachers'}, 
+                    {id:'approvals',icon:'fa-check',l:'Approvals'}, 
+                    {id:'bulk',icon:'fa-upload',l:'Bulk Uploads'},
+                    {id:'communication',icon:'fa-envelope',l:'Communication'}
+                  ]
+                : [{id:'home',icon:'fa-home',l:'My Dashboard'}, {id:'my-performance',icon:'fa-chart-line',l:'My Performance'}];
 
             const nav = document.getElementById('sidebar');
             nav.innerHTML = menu.map(m => `<button onclick="loadPage('${m.id}')" id="btn-${m.id}" class="w-full text-left px-6 py-3 hover:bg-slate-100 flex items-center gap-3"><i class="fa-solid ${m.icon}"></i> ${m.l}</button>`).join('');
@@ -135,21 +132,21 @@
 
         function loadPage(id) {
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-nav'));
-            document.getElementById(`btn-${id}`).classList.add('active-nav');
+            document.getElementById(`btn-${id}`)?.classList.add('active-nav');
             document.getElementById('pageTitle').innerText = id.charAt(0).toUpperCase() + id.slice(1);
             const c = document.getElementById('content');
-            c.innerHTML = '<div class="text-center mt-10">Loading...</div>';
+            c.innerHTML = '<div class="flex justify-center mt-20"><div class="loader"></div></div>';
 
             if(id === 'home') renderHome(c);
             else if(id === 'students') renderList(c, 'getStudents');
             else if(id === 'teachers') renderList(c, 'getTeachers');
             else if(id === 'approvals') renderApprovals(c);
-            else if(id === 'communication') renderCommunication(c);
-            else if(id === 'settings') renderSettings(c);
+            else if(id === 'bulk') renderBulk(c);
+            else if(id === 'my-performance') renderMyPerformance(c);
         }
 
         async function renderHome(c) {
-            const res = await fetch(`${API}?action=getDashboardStats&role=${currentUser.role}`);
+            const res = await fetch(`${API_URL}?action=getDashboardStats&role=${currentUser.role}`);
             const d = await res.json();
             if(currentUser.role === 'Admin') {
                 c.innerHTML = `<div class="grid grid-cols-3 gap-6">
@@ -157,90 +154,113 @@
                     <div class="glass-card p-6 border-l-4 border-blue-500"><h3>Total Teachers</h3><p class="text-3xl font-bold">${d.teachers}</p></div>
                     <div class="glass-card p-6 border-l-4 border-yellow-500"><h3>Pending</h3><p class="text-3xl font-bold">${d.pending}</p></div>
                 </div>`;
-            } else c.innerHTML = `<div class="glass-card p-10 text-center"><h3>Welcome Back!</h3></div>`;
+            } else c.innerHTML = `<div class="glass-card p-10 text-center"><h3>Welcome Back, ${currentUser.name}!</h3></div>`;
         }
 
         async function renderList(c, action) {
-            const res = await fetch(`${API}?action=${action}`);
+            const res = await fetch(`${API_URL}?action=${action}`);
             const data = await res.json();
-            let h = `<div class="flex justify-between mb-4"><input onkeyup="filterTable('dataTable')" id="search" placeholder="Search..." class="border p-2 rounded w-64"></div>
-            <div class="glass-card overflow-hidden"><table id="dataTable" class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">Name</th><th class="p-3">Info</th><th class="p-3">Contact</th></tr></thead><tbody>`;
-            data.forEach(r => {
-                h += `<tr><td class="p-3 font-bold">${r.FullName || r.Name}</td><td class="p-3">${r.Course || r.Subject}</td><td class="p-3">${r.Email}<br>${r.Mobile}</td></tr>`;
-            });
+            let h = `<div class="glass-card overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">Name</th><th class="p-3">Info</th><th class="p-3">Contact</th></tr></thead><tbody>`;
+            data.forEach(r => h += `<tr><td class="p-3 font-bold">${r.FullName || r.Name}</td><td class="p-3">${r.Course || r.Subject}</td><td class="p-3">${r.Email}</td></tr>`);
             c.innerHTML = h + `</tbody></table></div>`;
         }
 
-        async function renderCommunication(c) {
-            const res = await fetch(`${API}?action=getEmailLogs`);
-            const logs = await res.json();
-            let h = `<div class="flex justify-between mb-6"><h3 class="font-bold text-lg">Email History</h3><button onclick="document.getElementById('emailModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-4 py-2 rounded font-bold">+ Compose New</button></div>
-            <input onkeyup="filterTable('mailTable')" id="mailSearch" placeholder="Search history..." class="border p-2 rounded w-64 mb-4">
-            <div class="glass-card overflow-hidden"><table id="mailTable" class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">Date</th><th class="p-3">To</th><th class="p-3">Subject</th><th class="p-3">Status</th><th class="p-3">Action</th></tr></thead><tbody>`;
-            logs.reverse().forEach(l => {
-                h += `<tr><td class="p-3">${new Date(l.Date).toLocaleDateString()}</td><td class="p-3 font-bold">${l.Recipient}</td><td class="p-3">${l.Subject}</td>
-                <td class="p-3"><span class="${l.Status=='Sent'?'text-green-600':'text-red-600'} font-bold">${l.Status}</span></td>
-                <td class="p-3"><button onclick="resend('${l.Recipient}','${l.Subject}')" class="text-blue-600 hover:underline">Resend</button></td></tr>`;
-            });
-            c.innerHTML = h + `</tbody></table></div>`;
+        // --- BULK UPLOAD (Admin/Teacher Only) ---
+        function renderBulk(c) {
+            c.innerHTML = `
+            <div class="glass-card p-10 text-center">
+                <i class="fa-solid fa-cloud-arrow-up text-6xl text-indigo-200 mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Upload Data in Bulk</h3>
+                <p class="text-gray-500 mb-6">Upload .xlsx or .csv files for Attendance or Results.</p>
+                <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-6 py-3 rounded font-bold">Select File</button>
+            </div>`;
+        }
+
+        async function processFile() {
+            const file = document.getElementById('fileInput').files[0];
+            const type = document.getElementById('uploadType').value;
+            if(!file) return alert("Please select a file");
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const workbook = XLSX.read(e.target.result, {type: 'binary'});
+                const sheetName = workbook.SheetNames[0];
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                
+                // Map keys to lowercase/standardize
+                const records = jsonData.map(r => ({
+                    regNo: r.RegNo || r['Reg No'] || r.ID,
+                    name: r.Name || r['Student Name'],
+                    status: r.Status || 'Present',
+                    exam: r.Exam || 'Mid Term',
+                    course: r.Course || 'BCA',
+                    subject: r.Subject || 'General',
+                    marks: r.Marks || 0,
+                    grade: r.Grade || 'F'
+                }));
+
+                const payload = {
+                    action: 'bulkUpload',
+                    type: type,
+                    uploader: currentUser.name,
+                    role: currentUser.role,
+                    records: records
+                };
+
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await res.json();
+                alert(result.message);
+                document.getElementById('uploadModal').classList.add('hidden');
+            };
+            reader.readAsBinaryString(file);
+        }
+
+        // --- STUDENT PERFORMANCE VIEW ---
+        async function renderMyPerformance(c) {
+            // Find student's RegNo from user ID (For this demo we assume userId is RegNo or we'd fetch it)
+            // In a real app, userId should map to RegNo in the backend. 
+            // Here, assuming `currentUser.userId` is the RegNo for Students.
+            const res = await fetch(`${API_URL}?action=getMyData&regNo=${currentUser.userId}`);
+            const data = await res.json();
+            
+            let h = `<div class="space-y-6">`;
+            
+            // Attendance Table
+            h += `<div class="glass-card p-6"><h3 class="font-bold mb-4">My Attendance</h3>`;
+            if(data.attendance.length == 0) h+= `<p class="text-gray-400">No records found.</p>`;
+            else {
+                h += `<table class="w-full text-sm"><thead><tr><th class="text-left">Date</th><th class="text-left">Status</th></tr></thead><tbody>`;
+                data.attendance.forEach(r => h+= `<tr><td class="py-2">${new Date(r.Date).toLocaleDateString()}</td><td class="font-bold ${r.Status=='Present'?'text-green-600':'text-red-600'}">${r.Status}</td></tr>`);
+                h += `</tbody></table>`;
+            }
+            h += `</div>`;
+
+            // Results Table
+            h += `<div class="glass-card p-6"><h3 class="font-bold mb-4">My Exam Results</h3>`;
+            if(data.results.length == 0) h+= `<p class="text-gray-400">No results found.</p>`;
+            else {
+                h += `<table class="w-full text-sm"><thead><tr><th class="text-left">Exam</th><th class="text-left">Subject</th><th>Marks</th><th>Grade</th></tr></thead><tbody>`;
+                data.results.forEach(r => h+= `<tr><td class="py-2">${r.ExamTitle}</td><td>${r.Subject}</td><td class="text-center">${r.Marks}</td><td class="text-center font-bold">${r.Grade}</td></tr>`);
+                h += `</tbody></table>`;
+            }
+            h += `</div></div>`;
+            
+            c.innerHTML = h;
         }
 
         async function renderApprovals(c) {
-            const res = await fetch(`${API}?action=getPendingUsers`);
+            const res = await fetch(`${API_URL}?action=getPendingUsers`);
             const data = await res.json();
             let h = `<div class="glass-card p-4"><h3 class="font-bold mb-4">Requests</h3><table class="w-full text-sm"><tbody>`;
             if(data.length==0) h += `<tr><td>No pending requests.</td></tr>`;
-            else data.forEach(s => h += `<tr><td class="p-3">${s.name} (${s.course})</td><td class="p-3 text-right"><button onclick="act('${s.regNo}','approveUser')" class="bg-green-100 text-green-700 px-2 rounded mr-2">Approve</button><button onclick="act('${s.regNo}','rejectUser')" class="bg-red-100 text-red-700 px-2 rounded">Reject</button></td></tr>`);
+            else data.forEach(s => h += `<tr><td class="p-3">${s.name}</td><td class="p-3 text-right"><button onclick="act('${s.regNo}','approveUser')" class="bg-green-100 text-green-700 px-2 rounded mr-2">Approve</button></td></tr>`);
             c.innerHTML = h + `</tbody></table></div>`;
-        }
-
-        function renderSettings(c) {
-            c.innerHTML = `<div class="glass-card p-6 w-96"><h3 class="font-bold mb-4">Change Password</h3>
-            <form onsubmit="changePass(event)" class="space-y-3">
-                <input name="oldPass" placeholder="Current Password" type="password" class="w-full border p-2 rounded" required>
-                <input name="newPass" placeholder="New Password" type="password" class="w-full border p-2 rounded" required>
-                <button class="w-full bg-indigo-600 text-white py-2 rounded">Update</button>
-            </form></div>`;
-        }
-
-        // --- ACTIONS ---
-        function toggleEmailInput() {
-            const t = document.getElementById('emailTarget').value;
-            document.getElementById('singleEmailInput').style.display = t === 'single' ? 'block' : 'none';
-        }
-
-        async function sendEmail(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]'); btn.innerText = "Sending...";
-            const fd = new FormData(e.target); const d = { action: 'sendEmail', senderName: currentUser.name }; fd.forEach((v,k)=>d[k]=v);
-            const res = await fetch(API, {method:'POST', body:JSON.stringify(d)});
-            const r = await res.json();
-            alert(r.message); document.getElementById('emailModal').classList.add('hidden'); loadPage('communication');
-        }
-
-        async function resend(to, sub) {
-            if(!confirm("Resend this email?")) return;
-            await fetch(API, {method:'POST', body:JSON.stringify({action:'sendEmail', target:'single', singleEmail:to, subject:sub, body:'(Resent Email)'})});
-            alert("Resent!"); loadPage('communication');
-        }
-
-        async function changePass(e) {
-            e.preventDefault();
-            const fd = new FormData(e.target); const d={action:'changePassword', userId: currentUser.userId, role: currentUser.role}; fd.forEach((v,k)=>d[k]=v);
-            const res = await fetch(API, {method:'POST', body:JSON.stringify(d)});
-            const r = await res.json(); alert(r.message);
         }
 
         async function act(id, action) {
             if(!confirm("Proceed?")) return;
-            await fetch(API, {method:'POST', body:JSON.stringify({action, userId:id})});
+            await fetch(API_URL, {method:'POST', body:JSON.stringify({action, userId:id})});
             loadPage('approvals');
-        }
-
-        function filterTable(id) {
-            const term = event.target.value.toLowerCase();
-            const rows = document.querySelectorAll(`#${id} tbody tr`);
-            rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(term) ? '' : 'none');
         }
 
         function logout() { localStorage.clear(); location.reload(); }
