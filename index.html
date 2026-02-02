@@ -23,7 +23,8 @@
             <h1 class="text-3xl font-bold text-center mb-6 text-indigo-900">College ERP</h1>
             <form onsubmit="handleLogin(event)">
                 <input type="text" id="uid" placeholder="Email or Mobile" class="w-full border p-3 mb-4 rounded" required>
-                <input type="password" id="pass" placeholder="Password" class="w-full border p-3 mb-4 rounded" required>
+                <input type="password" id="pass" placeholder="Password" class="w-full border p-3 mb-2 rounded" required>
+                <div class="text-right mb-4"><a href="#" onclick="toggleModal('forgotModal')" class="text-xs text-indigo-600 font-bold hover:underline">Forgot Password?</a></div>
                 <button type="submit" id="loginBtn" class="w-full bg-indigo-600 text-white font-bold py-3 rounded">LOGIN</button>
             </form>
             <div class="mt-4 text-center"><a href="#" onclick="showRegister()" class="text-sm text-indigo-600 font-bold">New Student? Register</a></div>
@@ -67,35 +68,38 @@
         <div id="content" class="flex-1 overflow-auto p-8"></div>
     </main>
 
-    <div id="teacherModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
-        <div class="bg-white p-6 rounded-lg w-[400px]">
-            <h3 class="font-bold text-lg mb-4">Add Teacher</h3>
-            <form onsubmit="submitTeacher(event)" class="space-y-3">
-                <input name="fullName" placeholder="Full Name" class="w-full border p-2 rounded" required>
-                <input name="email" placeholder="Email" class="w-full border p-2 rounded" required>
-                <input name="mobile" placeholder="Mobile" class="w-full border p-2 rounded" required>
-                <input name="subject" placeholder="Subject" class="w-full border p-2 rounded" required>
-                <input name="qualification" placeholder="Qualification" class="w-full border p-2 rounded" required>
-                <button type="submit" class="bg-indigo-600 text-white w-full py-2 rounded">Add Teacher</button>
-                <button type="button" onclick="document.getElementById('teacherModal').classList.add('hidden')" class="w-full py-2 text-gray-500">Cancel</button>
+    <div id="forgotModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-96">
+            <h3 class="font-bold text-lg mb-4">Reset Password</h3>
+            <p class="text-sm text-gray-500 mb-4">Enter your registered email to receive a reset link.</p>
+            <input id="forgotEmail" placeholder="Enter Email" class="w-full border p-2 rounded mb-4" required>
+            <button onclick="handleForgotSubmit()" class="bg-indigo-600 text-white w-full py-2 rounded">Send Link</button>
+            <button onclick="toggleModal('forgotModal')" class="w-full py-2 text-gray-500 mt-2">Cancel</button>
+        </div>
+    </div>
+
+    <div id="resetScreen" class="hidden fixed inset-0 bg-slate-900 z-50 flex justify-center items-center">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-96">
+            <h1 class="text-2xl font-bold text-center mb-6">Set New Password</h1>
+            <form onsubmit="handleResetNew(event)">
+                <input type="password" id="newResetPass" placeholder="New Password" class="w-full border p-3 mb-4 rounded" required>
+                <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded">Update Password</button>
             </form>
         </div>
     </div>
 
-    <div id="editModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+    <div id="teacherModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
         <div class="bg-white p-6 rounded-lg w-[400px]">
-            <h3 class="font-bold text-lg mb-4">Edit Details</h3>
-            <form onsubmit="submitEdit(event)" class="space-y-3">
-                <input type="hidden" id="editId" name="id">
-                <input type="hidden" id="editType" name="type">
-                <input id="editName" name="name" placeholder="Full Name" class="w-full border p-2 rounded" required>
-                <input id="editMobile" name="mobile" placeholder="Mobile" class="w-full border p-2 rounded" required>
-                <input id="editExtra" name="extra" placeholder="Course/Subject" class="w-full border p-2 rounded" required>
-                <button type="submit" class="bg-green-600 text-white w-full py-2 rounded">Update</button>
-                <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')" class="w-full py-2 text-gray-500">Cancel</button>
-            </form>
+            <h3 class="font-bold mb-4">Add Teacher</h3>
+            <form onsubmit="submitTeacher(event)" class="space-y-3"><input name="fullName" placeholder="Name" class="w-full border p-2 rounded" required><input name="email" placeholder="Email" class="w-full border p-2 rounded" required><input name="mobile" placeholder="Mobile" class="w-full border p-2 rounded" required><input name="subject" placeholder="Subject" class="w-full border p-2 rounded" required><input name="qualification" placeholder="Qualification" class="w-full border p-2 rounded" required><button class="bg-indigo-600 text-white w-full py-2 rounded">Add</button></form>
+            <button onclick="document.getElementById('teacherModal').classList.add('hidden')" class="w-full mt-2 text-gray-500">Cancel</button>
         </div>
     </div>
+    <div id="editModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-[400px]"><h3 class="font-bold mb-4">Edit</h3><form onsubmit="submitEdit(event)" class="space-y-3"><input type="hidden" id="editId" name="id"><input type="hidden" id="editType" name="type"><input id="editName" name="name" class="w-full border p-2 rounded"><input id="editMobile" name="mobile" class="w-full border p-2 rounded"><input id="editExtra" name="extra" class="w-full border p-2 rounded"><button class="bg-green-600 text-white w-full py-2 rounded">Update</button></form><button onclick="document.getElementById('editModal').classList.add('hidden')" class="w-full mt-2 text-gray-500">Cancel</button></div>
+    </div>
+    <div id="uploadModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center"><div class="bg-white p-6 rounded-lg w-[400px]"><h3 class="font-bold mb-4">Upload File</h3><input type="hidden" id="uploadType"><input type="file" id="fileInput" class="w-full border p-2 mb-4" accept=".xlsx,.csv"><button onclick="processFile()" class="bg-green-600 text-white w-full py-2 rounded">Upload</button><button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="mt-2 w-full text-gray-500">Cancel</button></div></div>
+    <div id="emailModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center"><div class="bg-white p-6 rounded-lg w-[500px]"><h3 class="font-bold mb-4">Send Email</h3><form onsubmit="sendEmail(event)"><select name="target" class="w-full border p-2 mb-2"><option value="all_students">All Students</option><option value="all_teachers">All Teachers</option></select><input name="subject" placeholder="Subject" class="w-full border p-2 mb-2" required><textarea name="body" rows="4" placeholder="Message" class="w-full border p-2 mb-4" required></textarea><div class="flex justify-end gap-2"><button type="button" onclick="this.closest('.fixed').remove()" class="px-4 py-2">Cancel</button><button class="bg-indigo-600 text-white px-4 py-2 rounded">Send</button></div></form></div></div>
 
     <script>
         // 🟢 UPDATE URL 🟢
@@ -104,10 +108,24 @@
         let currentUser = JSON.parse(localStorage.getItem('user'));
         let cache = {};
 
-        if (currentUser) initApp(); 
+        // --- INIT & RESET CHECK ---
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            if(params.has('resetToken')) {
+                // Show Reset Screen
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('resetScreen').classList.remove('hidden');
+                window.resetToken = params.get('resetToken');
+                window.resetEmail = params.get('email');
+            } else if (currentUser) {
+                initApp();
+            }
+        };
 
         function showRegister() { document.getElementById('loginSection').classList.add('hidden'); document.getElementById('registerSection').classList.remove('hidden'); }
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
 
+        // --- AUTH ---
         async function handleLogin(e) {
             e.preventDefault();
             const btn = document.getElementById('loginBtn'); btn.innerText = "Verifying...";
@@ -127,6 +145,36 @@
             alert(r.message); if(r.success) location.reload();
         }
 
+        // --- PASSWORD RESET ---
+        async function handleForgotSubmit() {
+            const email = document.getElementById('forgotEmail').value;
+            if(!email) return alert("Enter email");
+            
+            // Pass the current URL so backend can construct the link
+            const frontendUrl = window.location.href.split('?')[0]; 
+            
+            await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'forgotPassword', email: email, frontendUrl: frontendUrl }) });
+            alert("If the email exists, a reset link has been sent.");
+            toggleModal('forgotModal');
+        }
+
+        async function handleResetNew(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('newResetPass').value;
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'resetPasswordWithToken', email: window.resetEmail, token: window.resetToken, newPass: newPass }) });
+            const data = await res.json();
+            alert(data.message);
+            if(data.success) window.location.href = window.location.pathname; // Reload to login
+        }
+
+        async function changePass(e) {
+            e.preventDefault();
+            const fd = new FormData(e.target); const d={action:'changePassword', userId: currentUser.userId, role: currentUser.role}; fd.forEach((v,k)=>d[k]=v);
+            const res = await fetch(API_URL, {method:'POST', body:JSON.stringify(d)});
+            const r = await res.json(); alert(r.message); e.target.reset();
+        }
+
+        // --- DASHBOARD ---
         function initApp() {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('userDisplay').innerText = `${currentUser.name} (${currentUser.role})`;
@@ -139,9 +187,10 @@
                     {id:'approvals',icon:'fa-check',l:'Approvals'}, 
                     {id:'attendance',icon:'fa-calendar-check',l:'Attendance'},
                     {id:'results',icon:'fa-file-alt',l:'Results'},
-                    {id:'communication',icon:'fa-envelope',l:'Communication'}
+                    {id:'communication',icon:'fa-envelope',l:'Communication'},
+                    {id:'settings',icon:'fa-cog',l:'Settings'}
                   ]
-                : [{id:'home',icon:'fa-home',l:'My Dashboard'}];
+                : [{id:'home',icon:'fa-home',l:'My Dashboard'}, {id:'my-performance',icon:'fa-chart-line',l:'My Performance'}, {id:'settings',icon:'fa-cog',l:'Settings'}];
 
             const nav = document.getElementById('sidebar');
             nav.innerHTML = menu.map(m => `<button onclick="loadPage('${m.id}')" id="btn-${m.id}" class="w-full text-left px-6 py-3 hover:bg-slate-100 flex items-center gap-3"><i class="fa-solid ${m.icon}"></i> ${m.l}</button>`).join('');
@@ -162,8 +211,11 @@
             else if(id === 'attendance') renderAttendance(c);
             else if(id === 'results') renderResults(c);
             else if(id === 'communication') renderCommunication(c);
+            else if(id === 'settings') renderSettings(c);
+            else if(id === 'my-performance') renderMyPerformance(c);
         }
 
+        // --- VIEWS ---
         async function renderHome(c) {
             if(!cache.stats) {
                 const res = await fetch(`${API_URL}?action=getInitData&role=${currentUser.role}`);
@@ -178,27 +230,26 @@
                     <div class="glass-card p-6 border-l-4 border-blue-500"><h3>Total Teachers</h3><p class="text-3xl font-bold">${d.teachers}</p></div>
                     <div class="glass-card p-6 border-l-4 border-yellow-500"><h3>Pending</h3><p class="text-3xl font-bold">${d.pending}</p></div>
                 </div>`;
-            } else {
-                const res = await fetch(`${API_URL}?action=getMyData&regNo=${currentUser.userId}`);
-                const data = await res.json();
-                let h = `<div class="glass-card p-10 text-center mb-6"><h3 class="text-2xl">Welcome Back, ${currentUser.name}!</h3></div>`;
-                h += `<div class="glass-card p-6 mb-4"><h3 class="font-bold mb-2">My Attendance</h3><table class="w-full text-sm"><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody>`;
-                data.attendance.forEach(r => h+= `<tr><td>${r.Date}</td><td class="font-bold ${r.Status=='Present'?'text-green-600':'text-red-600'}">${r.Status}</td></tr>`);
-                h += `</tbody></table></div>`;
-                c.innerHTML = h;
-            }
+            } else c.innerHTML = `<div class="glass-card p-10 text-center"><h3>Welcome Back, ${currentUser.name}!</h3></div>`;
         }
+
+        function renderSettings(c) {
+            c.innerHTML = `<div class="glass-card p-6 max-w-md"><h3 class="font-bold mb-4">Change Password</h3><form onsubmit="changePass(event)" class="space-y-4">
+                <input name="oldPass" placeholder="Current Password" type="password" class="w-full border p-2 rounded" required>
+                <input name="newPass" placeholder="New Password" type="password" class="w-full border p-2 rounded" required>
+                <button class="bg-indigo-600 text-white w-full py-2 rounded">Update</button>
+            </form></div>`;
+        }
+
+        // --- (Keep existing renderList, openEdit, submitEdit, submitTeacher, renderAttendance, renderResults, processFile, renderCommunication, sendEmail, renderApprovals, act, filterTable, logout functions from previous version unchanged) ---
+        // For brevity, I am including the missing key functions below:
 
         async function renderList(c, action, type) {
             const res = await fetch(`${API_URL}?action=${action}`);
             const data = await res.json();
-            
-            let h = `<div class="flex justify-between mb-4">
-                <input onkeyup="filterTable('dataTable')" id="search" placeholder="Search..." class="border p-2 rounded w-64">
-                ${type === 'teachers' && currentUser.role === 'Admin' ? `<button onclick="document.getElementById('teacherModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-4 py-2 rounded">+ Add Teacher</button>` : ''}
-            </div>
+            let h = `<div class="flex justify-between mb-4"><input onkeyup="filterTable('dataTable')" id="search" placeholder="Search..." class="border p-2 rounded w-64">
+            ${type === 'teachers' && currentUser.role === 'Admin' ? `<button onclick="document.getElementById('teacherModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-4 py-2 rounded">+ Add Teacher</button>` : ''}</div>
             <div class="glass-card overflow-hidden"><table id="dataTable" class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">ID</th><th class="p-3">Name</th><th class="p-3">Info</th><th class="p-3">Action</th></tr></thead><tbody>`;
-            
             data.forEach(r => {
                 const id = r.RegNo || r.ID;
                 const name = r.FullName || r.Name;
@@ -209,7 +260,6 @@
             c.innerHTML = h + `</tbody></table></div>`;
         }
 
-        // --- EDIT ---
         function openEdit(id, name, mobile, extra, type) {
             document.getElementById('editId').value = id;
             document.getElementById('editType').value = type;
@@ -226,92 +276,41 @@
             const name = document.getElementById('editName').value;
             const mobile = document.getElementById('editMobile').value;
             const extra = document.getElementById('editExtra').value;
-            
             const action = type === 'students' ? 'updateStudent' : 'updateTeacher';
             const payload = type === 'students' ? {action, regNo: id, name, mobile, course: extra} : {action, id, name, mobile, subject: extra};
-
             await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-            alert("Updated Successfully");
-            document.getElementById('editModal').classList.add('hidden');
-            loadPage(type);
+            alert("Updated Successfully"); document.getElementById('editModal').classList.add('hidden'); loadPage(type);
         }
 
         async function submitTeacher(e) {
-            e.preventDefault();
-            const fd = new FormData(e.target); const d={action:'registerTeacher'}; fd.forEach((v,k)=>d[k]=v);
-            await fetch(API_URL, {method:'POST', body:JSON.stringify(d)});
-            alert("Teacher Added"); document.getElementById('teacherModal').classList.add('hidden'); loadPage('teachers');
+            e.preventDefault(); const fd = new FormData(e.target); const d={action:'registerTeacher'}; fd.forEach((v,k)=>d[k]=v);
+            await fetch(API_URL, {method:'POST', body:JSON.stringify(d)}); alert("Added"); document.getElementById('teacherModal').classList.add('hidden'); loadPage('teachers');
         }
 
-        // --- ATTENDANCE & RESULTS (Simplified for brevity) ---
         async function renderAttendance(c) {
             c.innerHTML = `<div class="glass-card p-10 text-center"><h3 class="font-bold mb-4">Mark Attendance</h3><button onclick="document.getElementById('uploadModal').classList.remove('hidden'); document.getElementById('uploadType').value='Attendance'" class="bg-indigo-600 text-white px-4 py-2 rounded">Bulk Upload</button></div>`;
         }
         function renderResults(c) {
             c.innerHTML = `<div class="glass-card p-10 text-center"><h3 class="font-bold mb-4">Exam Results</h3><button onclick="document.getElementById('uploadModal').classList.remove('hidden'); document.getElementById('uploadType').value='Results'" class="bg-indigo-600 text-white px-4 py-2 rounded">Bulk Upload</button></div>`;
         }
-
-        // --- COMMUNICATION ---
         async function renderCommunication(c) {
             const res = await fetch(`${API_URL}?action=getEmailLogs`);
             const logs = await res.json();
             let h = `<div class="flex justify-between mb-6"><h3 class="font-bold text-lg">Email History</h3><button onclick="openEmailModal()" class="bg-indigo-600 text-white px-4 py-2 rounded font-bold">+ Compose</button></div>
-            <div class="glass-card overflow-hidden"><table id="mailTable" class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">Date</th><th class="p-3">To</th><th class="p-3">Subject</th><th class="p-3">Status</th></tr></thead><tbody>`;
-            logs.reverse().forEach(l => {
-                h += `<tr><td class="p-3 text-xs text-gray-500">${l.Date}</td><td class="p-3 font-bold">${l.Recipient}</td><td class="p-3">${l.Subject}</td>
-                <td class="p-3"><span class="${l.Status=='Sent'?'text-green-600':'text-red-600'} font-bold">${l.Status}</span></td></tr>`;
-            });
+            <div class="glass-card overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">Date</th><th class="p-3">To</th><th class="p-3">Subject</th><th class="p-3">Status</th></tr></thead><tbody>`;
+            logs.reverse().forEach(l => h += `<tr><td class="p-3 text-xs text-gray-500">${l.Date}</td><td class="p-3 font-bold">${l.Recipient}</td><td class="p-3">${l.Subject}</td><td class="p-3 text-green-600 font-bold">${l.Status}</td></tr>`);
             c.innerHTML = h + `</tbody></table></div>`;
         }
-
-        function openEmailModal() {
-            const m = document.createElement('div'); m.className = 'fixed inset-0 bg-black/50 z-50 flex justify-center items-center';
-            m.innerHTML = `<div class="bg-white p-6 rounded w-[500px]"><h3 class="font-bold mb-4">Send Email</h3><form onsubmit="sendEmail(event)"><select name="target" class="w-full border p-2 mb-2"><option value="all_students">All Students</option><option value="all_teachers">All Teachers</option></select><input name="subject" placeholder="Subject" class="w-full border p-2 mb-2" required><textarea name="body" rows="4" placeholder="Message" class="w-full border p-2 mb-4" required></textarea><div class="flex justify-end gap-2"><button type="button" onclick="this.closest('.fixed').remove()" class="px-4 py-2">Cancel</button><button class="bg-indigo-600 text-white px-4 py-2 rounded">Send</button></div></form></div>`;
-            document.body.appendChild(m);
-        }
-
-        async function sendEmail(e) {
-            e.preventDefault(); const fd=new FormData(e.target); const d={action:'sendEmail', senderName:currentUser.name}; fd.forEach((v,k)=>d[k]=v);
-            await fetch(API_URL, {method:'POST', body:JSON.stringify(d)}); alert("Emails Sent!"); location.reload();
-        }
-
-        // --- UTILS ---
-        async function renderApprovals(c) {
-            const data = cache.pending || [];
-            let h = `<div class="glass-card p-4"><h3 class="font-bold mb-4">Requests</h3><table class="w-full text-sm"><tbody>`;
-            if(data.length==0) h += `<tr><td>No pending requests.</td></tr>`;
-            else data.forEach(s => h += `<tr><td class="p-3">${s.name}</td><td class="p-3 text-right"><button onclick="act('${s.regNo}','approveUser')" class="bg-green-100 text-green-700 px-2 rounded mr-2">Approve</button></td></tr>`);
-            c.innerHTML = h + `</tbody></table></div>`;
-        }
+        function openEmailModal() { const m = document.createElement('div'); m.className = 'fixed inset-0 bg-black/50 z-50 flex justify-center items-center'; m.innerHTML = `<div class="bg-white p-6 rounded w-[500px]"><h3 class="font-bold mb-4">Send Email</h3><form onsubmit="sendEmail(event)"><select name="target" class="w-full border p-2 mb-2"><option value="all_students">All Students</option><option value="all_teachers">All Teachers</option></select><input name="subject" placeholder="Subject" class="w-full border p-2 mb-2" required><textarea name="body" rows="4" placeholder="Message" class="w-full border p-2 mb-4" required></textarea><div class="flex justify-end gap-2"><button type="button" onclick="this.closest('.fixed').remove()" class="px-4 py-2">Cancel</button><button class="bg-indigo-600 text-white px-4 py-2 rounded">Send</button></div></form></div>`; document.body.appendChild(m); }
+        async function sendEmail(e) { e.preventDefault(); const fd=new FormData(e.target); const d={action:'sendEmail', senderName:currentUser.name}; fd.forEach((v,k)=>d[k]=v); await fetch(API_URL, {method:'POST', body:JSON.stringify(d)}); alert("Emails Sent!"); location.reload(); }
+        async function renderApprovals(c) { const data = cache.pending || []; let h = `<div class="glass-card p-4"><h3 class="font-bold mb-4">Requests</h3><table class="w-full text-sm"><tbody>`; if(data.length==0) h += `<tr><td>No pending requests.</td></tr>`; else data.forEach(s => h += `<tr><td class="p-3">${s.name}</td><td class="p-3 text-right"><button onclick="act('${s.regNo}','approveUser')" class="bg-green-100 text-green-700 px-2 rounded mr-2">Approve</button></td></tr>`); c.innerHTML = h + `</tbody></table></div>`; }
         async function act(id, action) { if(confirm("Proceed?")) { await fetch(API_URL, {method:'POST', body:JSON.stringify({action, userId:id})}); loadPage('approvals'); } }
+        async function renderMyPerformance(c) { const res = await fetch(`${API_URL}?action=getMyData&regNo=${currentUser.userId}`); const data = await res.json(); let h = `<div class="glass-card p-6 mb-4"><h3 class="font-bold mb-2">My Attendance</h3><table class="w-full text-sm"><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody>`; data.attendance.forEach(r => h+= `<tr><td>${r.Date}</td><td class="font-bold ${r.Status=='Present'?'text-green-600':'text-red-600'}">${r.Status}</td></tr>`); h += `</tbody></table></div>`; c.innerHTML = h; }
+        
+        async function processFile() { const file = document.getElementById('fileInput').files[0]; const type = document.getElementById('uploadType').value; const reader = new FileReader(); reader.onload = async (e) => { const workbook = XLSX.read(e.target.result, {type: 'binary'}); const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]); const records = jsonData.map(r => ({ regNo: r.RegNo || r.ID, name: r.Name, status: r.Status || 'Present', exam: r.Exam, course: r.Course, subject: r.Subject, marks: r.Marks, grade: r.Grade })); await fetch(API_URL, { method: 'POST', body: JSON.stringify({action: 'bulkUpload', type, uploader: currentUser.name, records})}); alert("Uploaded!"); document.getElementById('uploadModal').classList.add('hidden'); }; reader.readAsBinaryString(file); }
+        
         function filterTable(id) { const term = event.target.value.toLowerCase(); document.querySelectorAll(`#${id} tbody tr`).forEach(r => r.style.display = r.innerText.toLowerCase().includes(term) ? '' : 'none'); }
         function logout() { localStorage.clear(); location.reload(); }
-        // Keep Bulk Upload Modal from previous version (HTML) and processFile function
-    </script>
-
-    <div id="uploadModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
-        <div class="bg-white p-6 rounded-lg w-[400px]">
-            <h3 class="font-bold mb-4">Upload File</h3>
-            <input type="hidden" id="uploadType">
-            <input type="file" id="fileInput" class="w-full border p-2 mb-4" accept=".xlsx,.csv">
-            <button onclick="processFile()" class="bg-green-600 text-white w-full py-2 rounded">Upload</button>
-            <button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="mt-2 w-full text-gray-500">Cancel</button>
-        </div>
-    </div>
-    <script>
-        async function processFile() {
-            const file = document.getElementById('fileInput').files[0];
-            const type = document.getElementById('uploadType').value;
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const workbook = XLSX.read(e.target.result, {type: 'binary'});
-                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                const records = jsonData.map(r => ({ regNo: r.RegNo || r.ID, name: r.Name, status: r.Status || 'Present', exam: r.Exam, course: r.Course, subject: r.Subject, marks: r.Marks, grade: r.Grade }));
-                await fetch(API_URL, { method: 'POST', body: JSON.stringify({action: 'bulkUpload', type, uploader: currentUser.name, records})});
-                alert("Uploaded!"); document.getElementById('uploadModal').classList.add('hidden');
-            };
-            reader.readAsBinaryString(file);
-        }
     </script>
 </body>
 </html>
