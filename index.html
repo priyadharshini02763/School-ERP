@@ -3,258 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schoooli | College Management</title>
+    <title>College ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #F8FAFC; }
-        .sidebar-active { background-color: #EEF2FF; color: #4F46E5; border-right: 3px solid #4F46E5; }
-        .glass-card { background: white; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .hidden { display: none !important; }
+        body { font-family: 'Inter', sans-serif; background: #F1F5F9; }
+        .glass-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .hidden { display: none; }
+        .active-nav { background: #EEF2FF; color: #4F46E5; border-right: 3px solid #4F46E5; }
     </style>
 </head>
-<body class="h-screen overflow-hidden text-slate-800">
+<body class="h-screen flex overflow-hidden text-slate-800">
 
-    <section id="loginSection" class="h-full flex justify-center items-center bg-slate-900">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-96 fade-in">
-            <h1 class="text-3xl font-bold text-center mb-6 text-indigo-900">Schoooli</h1>
+    <section id="loginSection" class="fixed inset-0 bg-slate-900 z-50 flex justify-center items-center">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-96">
+            <h1 class="text-3xl font-bold text-center mb-6 text-indigo-900">Schoooli ERP</h1>
             <form onsubmit="handleLogin(event)">
-                <input type="text" id="uid" placeholder="Email or Mobile" class="w-full border p-3 mb-4 rounded bg-slate-50" required>
-                <input type="password" id="pass" placeholder="Password" class="w-full border p-3 mb-2 rounded bg-slate-50" required>
-                <div class="text-right mb-4"><a href="#" onclick="toggleModal('forgotModal')" class="text-xs text-indigo-600 font-bold hover:underline">Forgot Password?</a></div>
-                <button type="submit" id="loginBtn" class="w-full bg-indigo-600 text-white font-bold py-3 rounded hover:bg-indigo-700">LOGIN</button>
+                <input type="text" id="uid" placeholder="Email or Mobile" class="w-full border p-3 mb-4 rounded" required>
+                <input type="password" id="pass" placeholder="Password" class="w-full border p-3 mb-4 rounded" required>
+                <button type="submit" id="loginBtn" class="w-full bg-indigo-600 text-white font-bold py-3 rounded">LOGIN</button>
             </form>
-            <div class="mt-6 text-center text-sm border-t pt-4">
-                <a href="#" onclick="showSection('registerSection')" class="text-slate-600 font-bold hover:text-indigo-600">Register New Student</a>
-            </div>
+            <div class="mt-4 text-center"><a href="#" onclick="showRegister()" class="text-sm text-indigo-600 font-bold">New Student? Register</a></div>
         </div>
     </section>
 
-    <section id="registerSection" class="h-full overflow-y-auto p-6 hidden bg-slate-100">
-        <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg fade-in my-10">
-            <h2 class="text-2xl font-bold text-indigo-900 mb-6">Student Registration</h2>
-            <form onsubmit="handleRegister(event)" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="email" name="email" placeholder="Email" required class="border p-2 rounded">
-                    <input type="text" name="mobile" placeholder="Mobile" required class="border p-2 rounded">
-                    <input type="password" name="password" placeholder="Password" required class="border p-2 rounded col-span-2">
-                    <input type="text" name="regNo" placeholder="Reg No" required class="border p-2 rounded">
-                    <input type="text" name="fullName" placeholder="Full Name" required class="border p-2 rounded">
+    <section id="registerSection" class="fixed inset-0 bg-slate-100 z-50 flex justify-center items-center hidden overflow-y-auto">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl my-10">
+            <h2 class="text-2xl font-bold mb-6">Student Registration</h2>
+            <form onsubmit="handleRegister(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <input name="email" placeholder="Email" class="border p-2 rounded" required>
+                    <input name="mobile" placeholder="Mobile" class="border p-2 rounded" required>
+                    <input name="password" placeholder="Password" type="password" class="border p-2 rounded col-span-2" required>
+                    <input name="regNo" placeholder="Reg No" class="border p-2 rounded" required>
+                    <input name="fullName" placeholder="Full Name" class="border p-2 rounded" required>
                     <select name="course" class="border p-2 rounded bg-white"><option>BCA</option><option>BSC</option><option>B.COM</option></select>
-                    <input type="number" name="year" placeholder="Year" required class="border p-2 rounded">
-                    <input type="text" name="guardianName" placeholder="Guardian Name" required class="border p-2 rounded">
-                    <input type="text" name="guardianContact" placeholder="Guardian Contact" required class="border p-2 rounded">
+                    <input name="year" placeholder="Year" type="number" class="border p-2 rounded" required>
+                    <input name="guardianName" placeholder="Guardian Name" class="border p-2 rounded" required>
+                    <input name="guardianContact" placeholder="Guardian Contact" class="border p-2 rounded" required>
                 </div>
-                <div class="flex gap-4">
-                    <button type="button" onclick="showSection('loginSection')" class="w-1/2 border py-3 rounded">Cancel</button>
-                    <button type="submit" id="regBtn" class="w-1/2 bg-indigo-600 text-white py-3 rounded">Register</button>
+                <div class="flex gap-4 mt-4">
+                    <button type="button" onclick="location.reload()" class="w-1/2 border py-2 rounded">Cancel</button>
+                    <button type="submit" id="regBtn" class="w-1/2 bg-indigo-600 text-white py-2 rounded">Register</button>
                 </div>
             </form>
         </div>
     </section>
 
-    <section id="dashboardSection" class="h-full flex overflow-hidden hidden">
-        <aside class="w-64 bg-white border-r flex flex-col z-20">
-            <div class="h-16 flex items-center px-6 border-b"><h1 class="text-xl font-bold text-slate-800">Schoooli</h1></div>
-            <nav class="flex-1 overflow-y-auto py-4 space-y-1 px-3" id="sidebarNav"></nav>
-            <div class="p-4 border-t"><button onclick="logout()" class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 rounded text-sm font-bold">Logout</button></div>
-        </aside>
-        <div class="flex-1 flex flex-col h-screen overflow-hidden bg-[#F1F5F9]">
-            <header class="h-16 bg-white border-b flex items-center justify-between px-8">
-                <h2 id="pageTitle" class="text-lg font-bold">Dashboard</h2>
-                <div class="text-right"><h4 class="text-sm font-bold" id="userName">User</h4></div>
-            </header>
-            <main class="flex-1 overflow-x-hidden overflow-y-auto p-8" id="mainContent"></main>
-        </div>
-    </section>
+    <aside class="w-64 bg-white border-r flex flex-col">
+        <div class="h-16 flex items-center px-6 border-b font-bold text-xl text-indigo-600">Schoooli</div>
+        <nav class="flex-1 overflow-y-auto py-4" id="sidebar"></nav>
+        <div class="p-4 border-t"><button onclick="logout()" class="w-full text-left px-4 py-2 text-red-500 font-bold">Logout</button></div>
+    </aside>
 
-    <div id="forgotModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
-        <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
-            <h3 class="font-bold mb-4">Reset Password</h3>
-            <input type="email" id="forgotEmail" placeholder="Enter Registered Email" class="w-full border p-2 rounded mb-4">
-            <div class="flex justify-end gap-2">
-                <button onclick="toggleModal('forgotModal')" class="px-4 py-2 text-gray-500">Close</button>
-                <button onclick="handleForgot()" class="bg-indigo-600 text-white px-4 py-2 rounded">Send Link</button>
-            </div>
-        </div>
-    </div>
+    <main class="flex-1 flex flex-col bg-slate-50">
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8">
+            <h2 id="pageTitle" class="text-lg font-bold">Dashboard</h2>
+            <div id="userDisplay" class="font-bold text-sm">User</div>
+        </header>
+        <div id="content" class="flex-1 overflow-auto p-8"></div>
+    </main>
 
-    <div id="teacherModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
-        <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
-            <h3 class="font-bold mb-4">Add Teacher</h3>
-            <form onsubmit="handleAddTeacher(event)" class="space-y-3">
-                <input name="fullName" placeholder="Name" class="w-full border p-2 rounded" required>
-                <input name="email" placeholder="Email" class="w-full border p-2 rounded" required>
-                <input name="mobile" placeholder="Mobile" class="w-full border p-2 rounded" required>
+    <div id="emailModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-[500px]">
+            <h3 class="font-bold text-lg mb-4">Compose Email</h3>
+            <form onsubmit="sendEmail(event)" class="space-y-4">
+                <select name="target" id="emailTarget" onchange="toggleEmailInput()" class="w-full border p-2 rounded">
+                    <option value="single">Single Student</option>
+                    <option value="all_students">All Students</option>
+                    <option value="all_teachers">All Teachers</option>
+                    <option value="BCA">Course: BCA</option>
+                    <option value="BSC">Course: BSC</option>
+                    <option value="B.COM">Course: B.COM</option>
+                </select>
+                <input name="singleEmail" id="singleEmailInput" placeholder="Recipient Email" class="w-full border p-2 rounded">
                 <input name="subject" placeholder="Subject" class="w-full border p-2 rounded" required>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded">Add</button>
+                <textarea name="body" rows="4" placeholder="Message (HTML supported)" class="w-full border p-2 rounded" required></textarea>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="document.getElementById('emailModal').classList.add('hidden')" class="px-4 py-2 text-gray-500">Cancel</button>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">Send</button>
+                </div>
             </form>
-            <button onclick="toggleModal('teacherModal')" class="mt-2 w-full text-gray-500 text-sm">Cancel</button>
-        </div>
-    </div>
-
-    <div id="editModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
-        <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
-            <h3 class="font-bold mb-4">Edit Student</h3>
-            <form onsubmit="handleEditSubmit(event)" class="space-y-3">
-                <input type="hidden" name="regNo">
-                <input name="fullName" placeholder="Name" class="w-full border p-2 rounded" required>
-                <input name="mobile" placeholder="Mobile" class="w-full border p-2 rounded" required>
-                <select name="course" class="w-full border p-2 rounded bg-white"><option>BCA</option><option>BSC</option><option>B.COM</option></select>
-                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded">Update</button>
-            </form>
-            <button onclick="toggleModal('editModal')" class="mt-2 w-full text-gray-500 text-sm">Cancel</button>
         </div>
     </div>
 
     <script>
-        // 🟢 UPDATE THIS URL
-        const API_URL = "https://script.google.com/macros/s/AKfycbwk4P4Q9DZDJ6ebGI64QLcGw5HONeBhUqDQ5wSnoSSZZ39icw5wxXGgr_3ggtpgplQ/exec";
+        // 🟢 UPDATE THIS API URL 🟢
+        const API = "https://script.google.com/macros/s/AKfycbwk4P4Q9DZDJ6ebGI64QLcGw5HONeBhUqDQ5wSnoSSZZ39icw5wxXGgr_3ggtpgplQ/exec";
 
-        // STATE & ROUTING
-        const user = JSON.parse(localStorage.getItem('user'));
-        function showSection(id) { document.querySelectorAll('section').forEach(el => el.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
-        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
-        if(user) initDashboard(); else showSection('loginSection');
+        let currentUser = JSON.parse(localStorage.getItem('user'));
+        
+        if (currentUser) initApp(); 
 
-        // --- AUTH & SETUP ---
+        function showRegister() { document.getElementById('loginSection').classList.add('hidden'); document.getElementById('registerSection').classList.remove('hidden'); }
+
         async function handleLogin(e) {
             e.preventDefault();
             const btn = document.getElementById('loginBtn'); btn.innerText = "Verifying...";
             try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', uid: document.getElementById('uid').value, pass: document.getElementById('pass').value }) });
+                const res = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'login', uid: document.getElementById('uid').value, pass: document.getElementById('pass').value }) });
                 const data = await res.json();
-                if(data.success) { localStorage.setItem('user', JSON.stringify(data)); location.reload(); } 
-                else { alert(data.message); btn.innerText = "LOGIN"; }
-            } catch(e) { alert("Server Error"); btn.innerText = "LOGIN"; }
+                if(data.success) {
+                    localStorage.setItem('user', JSON.stringify(data));
+                    location.reload();
+                } else { alert(data.message); btn.innerText = "LOGIN"; }
+            } catch(e) { alert("Error"); btn.innerText = "LOGIN"; }
         }
 
         async function handleRegister(e) {
             e.preventDefault();
-            const btn = document.getElementById('regBtn'); btn.innerText = "Wait...";
+            document.getElementById('regBtn').innerText = "Processing...";
             const fd = new FormData(e.target); const d = { action: 'registerStudent' }; fd.forEach((v,k)=>d[k]=v);
-            const res = await fetch(API_URL, {method:'POST', body:JSON.stringify(d)});
+            const res = await fetch(API, {method:'POST', body:JSON.stringify(d)});
             const r = await res.json();
-            alert(r.message); if(r.success) showSection('loginSection'); btn.innerText = "Register";
+            alert(r.message); if(r.success) location.reload();
         }
 
-        async function handleForgot() {
-            const email = document.getElementById('forgotEmail').value;
-            if(!email) return alert("Enter email");
-            await fetch(API_URL, {method:'POST', body:JSON.stringify({action:'forgotPassword', email})});
-            alert("If email exists, admin has been notified."); toggleModal('forgotModal');
-        }
-
-        // --- DASHBOARD CORE ---
-        function initDashboard() {
-            showSection('dashboardSection');
-            document.getElementById('userName').innerText = user.name;
-            const menu = user.role === 'Admin' 
-                ? [{id:'home',icon:'fa-home',l:'Dashboard'}, {id:'students',icon:'fa-users',l:'Students'}, {id:'teachers',icon:'fa-chalkboard-user',l:'Teachers'}, {id:'approvals',icon:'fa-check',l:'Approvals'}, {id:'settings',icon:'fa-cog',l:'Settings'}]
-                : [{id:'home',icon:'fa-home',l:'My Profile'}, {id:'settings',icon:'fa-cog',l:'Settings'}];
+        function initApp() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('userDisplay').innerText = `${currentUser.name} (${currentUser.role})`;
             
-            const nav = document.getElementById('sidebarNav');
-            nav.innerHTML = menu.map(m => `<button onclick="loadView('${m.id}')" class="w-full text-left px-4 py-3 hover:bg-slate-100 rounded flex gap-2 items-center"><i class="fa-solid ${m.icon}"></i> ${m.l}</button>`).join('');
-            loadView('home');
+            const menu = currentUser.role === 'Admin' 
+                ? [{id:'home',icon:'fa-chart-pie',l:'Dashboard'}, {id:'students',icon:'fa-users',l:'Students'}, {id:'teachers',icon:'fa-chalkboard-user',l:'Teachers'}, {id:'approvals',icon:'fa-check',l:'Approvals'}, {id:'communication',icon:'fa-envelope',l:'Communication'}, {id:'settings',icon:'fa-cog',l:'Settings'}]
+                : [{id:'home',icon:'fa-home',l:'My Profile'}, {id:'settings',icon:'fa-cog',l:'Settings'}];
+
+            const nav = document.getElementById('sidebar');
+            nav.innerHTML = menu.map(m => `<button onclick="loadPage('${m.id}')" id="btn-${m.id}" class="w-full text-left px-6 py-3 hover:bg-slate-100 flex items-center gap-3"><i class="fa-solid ${m.icon}"></i> ${m.l}</button>`).join('');
+            loadPage('home');
         }
 
-        function loadView(id) {
-            const c = document.getElementById('mainContent');
+        function loadPage(id) {
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-nav'));
+            document.getElementById(`btn-${id}`).classList.add('active-nav');
             document.getElementById('pageTitle').innerText = id.charAt(0).toUpperCase() + id.slice(1);
-            c.innerHTML = `<div class="text-center mt-20">Loading...</div>`;
-            if(id==='home') renderHome(c); 
-            else if(id==='students') renderList(c, 'getStudents', 'Student');
-            else if(id==='teachers') renderList(c, 'getTeachers', 'Teacher');
-            else if(id==='approvals') renderApprovals(c);
-            else if(id==='settings') renderSettings(c);
+            const c = document.getElementById('content');
+            c.innerHTML = '<div class="text-center mt-10">Loading...</div>';
+
+            if(id === 'home') renderHome(c);
+            else if(id === 'students') renderList(c, 'getStudents');
+            else if(id === 'teachers') renderList(c, 'getTeachers');
+            else if(id === 'approvals') renderApprovals(c);
+            else if(id === 'communication') renderCommunication(c);
+            else if(id === 'settings') renderSettings(c);
         }
 
-        // --- VIEWS ---
         async function renderHome(c) {
-            const res = await fetch(API_URL + `?action=getDashboardStats&role=${user.role}`);
+            const res = await fetch(`${API}?action=getDashboardStats&role=${currentUser.role}`);
             const d = await res.json();
-            if(user.role === 'Admin') {
-                c.innerHTML = `<div class="grid grid-cols-3 gap-4">
-                    <div class="glass-card p-6 border-l-4 border-blue-500"><h3>Total Students</h3><p class="text-2xl font-bold">${d.students}</p></div>
-                    <div class="glass-card p-6 border-l-4 border-green-500"><h3>Total Teachers</h3><p class="text-2xl font-bold">${d.teachers}</p></div>
-                    <div class="glass-card p-6 border-l-4 border-yellow-500"><h3>Pending</h3><p class="text-2xl font-bold">${d.pending}</p></div>
+            if(currentUser.role === 'Admin') {
+                c.innerHTML = `<div class="grid grid-cols-3 gap-6">
+                    <div class="glass-card p-6 border-l-4 border-indigo-500"><h3>Total Students</h3><p class="text-3xl font-bold">${d.students}</p></div>
+                    <div class="glass-card p-6 border-l-4 border-blue-500"><h3>Total Teachers</h3><p class="text-3xl font-bold">${d.teachers}</p></div>
+                    <div class="glass-card p-6 border-l-4 border-yellow-500"><h3>Pending</h3><p class="text-3xl font-bold">${d.pending}</p></div>
                 </div>`;
-            } else c.innerHTML = `<div class="glass-card p-10"><h3>Welcome Back, ${user.name}</h3></div>`;
+            } else c.innerHTML = `<div class="glass-card p-10 text-center"><h3>Welcome Back!</h3></div>`;
         }
 
-        async function renderList(c, action, type) {
-            const res = await fetch(API_URL + `?action=${action}`);
+        async function renderList(c, action) {
+            const res = await fetch(`${API}?action=${action}`);
             const data = await res.json();
-            // Search Bar
-            let html = `<div class="mb-4 flex justify-between"><input onkeyup="filterTable()" id="searchInput" placeholder="Search..." class="border p-2 rounded w-64">
-            ${type==='Teacher' ? `<button onclick="toggleModal('teacherModal')" class="bg-indigo-600 text-white px-4 py-2 rounded">+ Add</button>` : ''}</div>`;
-            // Table
-            html += `<div class="glass-card overflow-hidden"><table id="dataTable" class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">ID</th><th class="p-3">Name</th><th class="p-3">Info</th><th class="p-3">Action</th></tr></thead><tbody>`;
+            let h = `<div class="flex justify-between mb-4"><input onkeyup="filterTable('dataTable')" id="search" placeholder="Search..." class="border p-2 rounded w-64"></div>
+            <div class="glass-card overflow-hidden"><table id="dataTable" class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">Name</th><th class="p-3">Info</th><th class="p-3">Contact</th></tr></thead><tbody>`;
             data.forEach(r => {
-                html += `<tr><td class="p-3">${r.RegNo||r.ID}</td><td class="p-3 font-bold">${r.FullName||r.Name}</td><td class="p-3">${r.Course||r.Subject}</td>
-                <td class="p-3">${type==='Student'?`<button onclick="openEdit('${r.RegNo}','${r.FullName}','${r.Mobile}')" class="text-blue-600">Edit</button>`:''}</td></tr>`;
+                h += `<tr><td class="p-3 font-bold">${r.FullName || r.Name}</td><td class="p-3">${r.Course || r.Subject}</td><td class="p-3">${r.Email}<br>${r.Mobile}</td></tr>`;
             });
-            c.innerHTML = html + `</tbody></table></div>`;
+            c.innerHTML = h + `</tbody></table></div>`;
+        }
+
+        async function renderCommunication(c) {
+            const res = await fetch(`${API}?action=getEmailLogs`);
+            const logs = await res.json();
+            let h = `<div class="flex justify-between mb-6"><h3 class="font-bold text-lg">Email History</h3><button onclick="document.getElementById('emailModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-4 py-2 rounded font-bold">+ Compose New</button></div>
+            <input onkeyup="filterTable('mailTable')" id="mailSearch" placeholder="Search history..." class="border p-2 rounded w-64 mb-4">
+            <div class="glass-card overflow-hidden"><table id="mailTable" class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">Date</th><th class="p-3">To</th><th class="p-3">Subject</th><th class="p-3">Status</th><th class="p-3">Action</th></tr></thead><tbody>`;
+            logs.reverse().forEach(l => {
+                h += `<tr><td class="p-3">${new Date(l.Date).toLocaleDateString()}</td><td class="p-3 font-bold">${l.Recipient}</td><td class="p-3">${l.Subject}</td>
+                <td class="p-3"><span class="${l.Status=='Sent'?'text-green-600':'text-red-600'} font-bold">${l.Status}</span></td>
+                <td class="p-3"><button onclick="resend('${l.Recipient}','${l.Subject}')" class="text-blue-600 hover:underline">Resend</button></td></tr>`;
+            });
+            c.innerHTML = h + `</tbody></table></div>`;
         }
 
         async function renderApprovals(c) {
-            const res = await fetch(API_URL + `?action=getPendingUsers`);
+            const res = await fetch(`${API}?action=getPendingUsers`);
             const data = await res.json();
-            let html = `<div class="glass-card p-4"><h3 class="font-bold mb-4">Requests</h3><table class="w-full text-sm"><tbody>`;
-            if(data.length==0) html += `<tr><td>No pending requests.</td></tr>`;
-            else data.forEach(s => html += `<tr><td class="p-3">${s.name} (${s.course})</td><td class="p-3 text-right"><button onclick="approve('${s.regNo}')" class="bg-green-100 text-green-700 px-2 rounded mr-2">Approve</button><button onclick="reject('${s.regNo}')" class="bg-red-100 text-red-700 px-2 rounded">Reject</button></td></tr>`);
-            c.innerHTML = html + `</tbody></table></div>`;
+            let h = `<div class="glass-card p-4"><h3 class="font-bold mb-4">Requests</h3><table class="w-full text-sm"><tbody>`;
+            if(data.length==0) h += `<tr><td>No pending requests.</td></tr>`;
+            else data.forEach(s => h += `<tr><td class="p-3">${s.name} (${s.course})</td><td class="p-3 text-right"><button onclick="act('${s.regNo}','approveUser')" class="bg-green-100 text-green-700 px-2 rounded mr-2">Approve</button><button onclick="act('${s.regNo}','rejectUser')" class="bg-red-100 text-red-700 px-2 rounded">Reject</button></td></tr>`);
+            c.innerHTML = h + `</tbody></table></div>`;
         }
 
         function renderSettings(c) {
             c.innerHTML = `<div class="glass-card p-6 w-96"><h3 class="font-bold mb-4">Change Password</h3>
             <form onsubmit="changePass(event)" class="space-y-3">
-                <input type="password" name="oldPass" placeholder="Current Password" class="w-full border p-2 rounded" required>
-                <input type="password" id="newP1" name="newPass" placeholder="New Password" class="w-full border p-2 rounded" required>
-                <input type="password" id="newP2" placeholder="Confirm New" class="w-full border p-2 rounded" required>
-                <button class="w-full bg-indigo-600 text-white py-2 rounded">Update Password</button>
+                <input name="oldPass" placeholder="Current Password" type="password" class="w-full border p-2 rounded" required>
+                <input name="newPass" placeholder="New Password" type="password" class="w-full border p-2 rounded" required>
+                <button class="w-full bg-indigo-600 text-white py-2 rounded">Update</button>
             </form></div>`;
         }
 
         // --- ACTIONS ---
-        async function approve(id) { if(confirm("Approve & Send Email?")) { await fetch(API_URL, {method:'POST', body:JSON.stringify({action:'approveUser', userId:id})}); loadView('approvals'); }}
-        async function reject(id) { if(confirm("Reject?")) { await fetch(API_URL, {method:'POST', body:JSON.stringify({action:'rejectUser', userId:id})}); loadView('approvals'); }}
-        
-        async function handleAddTeacher(e) {
-            e.preventDefault(); const fd=new FormData(e.target); const d={action:'registerTeacher'}; fd.forEach((v,k)=>d[k]=v);
-            await fetch(API_URL, {method:'POST', body:JSON.stringify(d)});
-            alert("Teacher Added"); toggleModal('teacherModal'); loadView('teachers');
+        function toggleEmailInput() {
+            const t = document.getElementById('emailTarget').value;
+            document.getElementById('singleEmailInput').style.display = t === 'single' ? 'block' : 'none';
         }
 
-        function openEdit(reg, name, mob) {
-            const f = document.querySelector('#editModal form');
-            f.regNo.value = reg; f.fullName.value = name; f.mobile.value = mob;
-            toggleModal('editModal');
+        async function sendEmail(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]'); btn.innerText = "Sending...";
+            const fd = new FormData(e.target); const d = { action: 'sendEmail', senderName: currentUser.name }; fd.forEach((v,k)=>d[k]=v);
+            const res = await fetch(API, {method:'POST', body:JSON.stringify(d)});
+            const r = await res.json();
+            alert(r.message); document.getElementById('emailModal').classList.add('hidden'); loadPage('communication');
         }
 
-        async function handleEditSubmit(e) {
-            e.preventDefault(); const fd=new FormData(e.target); const d={action:'updateStudent'}; fd.forEach((v,k)=>d[k]=v);
-            await fetch(API_URL, {method:'POST', body:JSON.stringify(d)});
-            alert("Updated"); toggleModal('editModal'); loadView('students');
+        async function resend(to, sub) {
+            if(!confirm("Resend this email?")) return;
+            await fetch(API, {method:'POST', body:JSON.stringify({action:'sendEmail', target:'single', singleEmail:to, subject:sub, body:'(Resent Email)'})});
+            alert("Resent!"); loadPage('communication');
         }
 
         async function changePass(e) {
             e.preventDefault();
-            if(document.getElementById('newP1').value !== document.getElementById('newP2').value) return alert("Passwords do not match");
-            const fd=new FormData(e.target); const d={action:'changePassword', userId: user.userId, role: user.role}; fd.forEach((v,k)=>d[k]=v);
-            const res = await fetch(API_URL, {method:'POST', body:JSON.stringify(d)});
+            const fd = new FormData(e.target); const d={action:'changePassword', userId: currentUser.userId, role: currentUser.role}; fd.forEach((v,k)=>d[k]=v);
+            const res = await fetch(API, {method:'POST', body:JSON.stringify(d)});
             const r = await res.json(); alert(r.message);
         }
 
-        function filterTable() {
-            const filter = document.getElementById("searchInput").value.toUpperCase();
-            const tr = document.getElementById("dataTable").getElementsByTagName("tr");
-            for (let i = 1; i < tr.length; i++) {
-                tr[i].style.display = tr[i].textContent.toUpperCase().indexOf(filter) > -1 ? "" : "none";
-            }
+        async function act(id, action) {
+            if(!confirm("Proceed?")) return;
+            await fetch(API, {method:'POST', body:JSON.stringify({action, userId:id})});
+            loadPage('approvals');
+        }
+
+        function filterTable(id) {
+            const term = event.target.value.toLowerCase();
+            const rows = document.querySelectorAll(`#${id} tbody tr`);
+            rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(term) ? '' : 'none');
         }
 
         function logout() { localStorage.clear(); location.reload(); }
