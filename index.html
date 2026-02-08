@@ -216,5 +216,11 @@
         async function act(id, action) { if(confirm("Confirm?")) { await fetch(API_URL, {method:'POST', body:JSON.stringify({action, userId:id})}); loadPage('approvals'); } }
         function logout() { localStorage.clear(); location.reload(); }
     </script>
+
+    <!-- Vercel Speed Insights -->
+    <script>
+        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>
