@@ -3,32 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College ERP</title>
+    <title>Schoooli ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #F8FAFC; }
-        .glass-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .active-nav { background: #EEF2FF; color: #4F46E5; border-right: 3px solid #4F46E5; }
+        body { font-family: sans-serif; background: #f3f4f6; }
+        .glass { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .active-nav { background: #e0e7ff; color: #4338ca; border-right: 4px solid #4338ca; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
         .cal-day { padding: 8px; text-align: center; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
-        .status-P { background: #DCFCE7; color: #166534; } /* Green */
-        .status-A { background: #FEE2E2; color: #991B1B; } /* Red */
-        .status-H { background: #FEF9C3; color: #854D0E; } /* Yellow/Orange */
-        .status-E { background: #DBEAFE; color: #1E40AF; } /* Blue */
+        .status-P { background: #dcfce7; color: #166534; }
+        .status-A { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
-<body class="h-screen flex overflow-hidden text-slate-800">
+<body class="h-screen flex overflow-hidden text-gray-800">
 
     <section id="loginSection" class="fixed inset-0 bg-slate-900 z-50 flex justify-center items-center">
         <div class="bg-white p-8 rounded-xl shadow-2xl w-96">
-            <h1 class="text-3xl font-bold text-center mb-6 text-indigo-900">College ERP</h1>
+            <h1 class="text-3xl font-bold text-center mb-6 text-indigo-900">Schoooli ERP</h1>
             <form onsubmit="handleLogin(event)">
-                <input type="text" id="uid" placeholder="Email or Mobile" class="w-full border p-3 mb-4 rounded" required>
+                <input type="text" id="uid" placeholder="Email or Reg No" class="w-full border p-3 mb-4 rounded" required>
                 <input type="password" id="pass" placeholder="Password" class="w-full border p-3 mb-4 rounded" required>
-                <div class="text-right mb-4"><a href="#" onclick="toggleModal('forgotModal')" class="text-xs text-indigo-600 font-bold hover:underline">Forgot Password?</a></div>
                 <button type="submit" id="loginBtn" class="w-full bg-indigo-600 text-white font-bold py-3 rounded">LOGIN</button>
             </form>
             <div class="mt-4 text-center"><a href="#" onclick="showRegister()" class="text-sm text-indigo-600 font-bold">New Student? Register</a></div>
@@ -37,16 +33,16 @@
 
     <section id="registerSection" class="fixed inset-0 bg-slate-100 z-50 flex justify-center items-center hidden overflow-y-auto">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl my-10">
-            <h2 class="text-2xl font-bold mb-6">Student Admission</h2>
+            <h2 class="text-2xl font-bold mb-6">Student Registration</h2>
             <form onsubmit="handleRegister(event)" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
-                    <input name="email" placeholder="Email" class="border p-2 rounded" required>
-                    <input name="mobile" placeholder="Mobile" class="border p-2 rounded" required>
-                    <input name="password" placeholder="Password" type="password" class="border p-2 rounded col-span-2" required>
                     <input name="regNo" placeholder="Reg No" class="border p-2 rounded" required>
                     <input name="fullName" placeholder="Full Name" class="border p-2 rounded" required>
+                    <input name="email" placeholder="Email" class="border p-2 rounded" required>
+                    <input name="mobile" placeholder="Mobile" class="border p-2 rounded" required>
+                    <input name="password" type="password" placeholder="Password" class="border p-2 rounded col-span-2" required>
                     <select name="course" class="border p-2 rounded bg-white"><option>BCA</option><option>BSC</option><option>B.COM</option></select>
-                    <input name="year" placeholder="Year" type="number" class="border p-2 rounded" required>
+                    <input name="year" placeholder="Year" class="border p-2 rounded" required>
                     <input name="guardianName" placeholder="Guardian Name" class="border p-2 rounded" required>
                     <input name="guardianContact" placeholder="Guardian Contact" class="border p-2 rounded" required>
                 </div>
@@ -59,7 +55,7 @@
     </section>
 
     <aside class="w-64 bg-white border-r flex flex-col">
-        <div class="h-16 flex items-center px-6 border-b font-bold text-xl text-indigo-600">College ERP</div>
+        <div class="h-16 flex items-center px-6 border-b font-bold text-xl text-indigo-600">Schoooli</div>
         <nav class="flex-1 overflow-y-auto py-4" id="sidebar"></nav>
         <div class="p-4 border-t"><button onclick="logout()" class="w-full text-left px-4 py-2 text-red-500 font-bold">Logout</button></div>
     </aside>
@@ -72,224 +68,153 @@
         <div id="content" class="flex-1 overflow-auto p-8"></div>
     </main>
 
-    <div id="calendarModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
-        <div class="bg-white p-6 rounded-lg w-[500px]">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg" id="calTitle">Attendance Record</h3>
-                <button onclick="document.getElementById('calendarModal').classList.add('hidden')" class="text-gray-500 text-xl">&times;</button>
-            </div>
-            <div id="calendarContainer"></div>
-            <div class="mt-4 flex gap-4 text-xs font-bold">
-                <span class="flex items-center gap-1"><div class="w-3 h-3 bg-green-200"></div> Present (P)</span>
-                <span class="flex items-center gap-1"><div class="w-3 h-3 bg-red-200"></div> Absent (A)</span>
-                <span class="flex items-center gap-1"><div class="w-3 h-3 bg-yellow-200"></div> Holiday (H)</span>
-                <span class="flex items-center gap-1"><div class="w-3 h-3 bg-blue-200"></div> Leave (E)</span>
-            </div>
-        </div>
-    </div>
-
     <div id="teacherModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
         <div class="bg-white p-6 rounded-lg w-[400px]">
             <h3 class="font-bold mb-4">Add Teacher</h3>
-            <form onsubmit="submitTeacher(event)" class="space-y-3"><input name="fullName" placeholder="Name" class="w-full border p-2 rounded" required><input name="email" placeholder="Email" class="w-full border p-2 rounded" required><input name="mobile" placeholder="Mobile" class="w-full border p-2 rounded" required><input name="subject" placeholder="Subject" class="w-full border p-2 rounded" required><input name="qualification" placeholder="Qualification" class="w-full border p-2 rounded" required><button class="bg-indigo-600 text-white w-full py-2 rounded">Add</button></form><button onclick="document.getElementById('teacherModal').classList.add('hidden')" class="w-full mt-2 text-gray-500">Cancel</button>
+            <form onsubmit="submitTeacher(event)" class="space-y-3">
+                <input name="fullName" placeholder="Name" class="w-full border p-2 rounded" required>
+                <input name="email" placeholder="Email" class="w-full border p-2 rounded" required>
+                <input name="mobile" placeholder="Mobile" class="w-full border p-2 rounded" required>
+                <input name="subject" placeholder="Subject" class="w-full border p-2 rounded" required>
+                <input name="qualification" placeholder="Qualification" class="w-full border p-2 rounded" required>
+                <button class="bg-indigo-600 text-white w-full py-2 rounded">Add</button>
+                <button type="button" onclick="document.getElementById('teacherModal').classList.add('hidden')" class="w-full mt-2 text-gray-500">Cancel</button>
+            </form>
         </div>
     </div>
+
     <div id="editModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
-        <div class="bg-white p-6 rounded-lg w-[400px]"><h3 class="font-bold mb-4">Edit</h3><form onsubmit="submitEdit(event)" class="space-y-3"><input type="hidden" id="editId" name="id"><input type="hidden" id="editType" name="type"><input id="editName" name="name" class="w-full border p-2 rounded"><input id="editMobile" name="mobile" class="w-full border p-2 rounded"><input id="editExtra" name="extra" class="w-full border p-2 rounded"><button class="bg-green-600 text-white w-full py-2 rounded">Update</button></form><button onclick="document.getElementById('editModal').classList.add('hidden')" class="w-full mt-2 text-gray-500">Cancel</button></div>
+        <div class="bg-white p-6 rounded-lg w-[400px]">
+            <h3 class="font-bold mb-4">Edit Details</h3>
+            <form onsubmit="submitEdit(event)" class="space-y-3">
+                <input type="hidden" id="editId">
+                <input type="hidden" id="editType">
+                <input id="editName" placeholder="Name" class="w-full border p-2 rounded" required>
+                <input id="editMobile" placeholder="Mobile" class="w-full border p-2 rounded" required>
+                <input id="editExtra" placeholder="Course/Subject" class="w-full border p-2 rounded" required>
+                <button class="bg-green-600 text-white w-full py-2 rounded">Update</button>
+                <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')" class="w-full mt-2 text-gray-500">Cancel</button>
+            </form>
+        </div>
     </div>
-    <div id="forgotModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center"><div class="bg-white p-6 rounded-lg w-96"><h3 class="font-bold mb-4">Reset</h3><input id="forgotEmail" placeholder="Email" class="w-full border p-2 rounded mb-4"><button onclick="handleForgotSubmit()" class="bg-indigo-600 text-white w-full py-2 rounded">Send Link</button><button onclick="toggleModal('forgotModal')" class="w-full mt-2 text-gray-500">Cancel</button></div></div>
-    <div id="resetScreen" class="hidden fixed inset-0 bg-slate-900 z-50 flex justify-center items-center"><div class="bg-white p-8 rounded-xl w-96"><h1 class="text-2xl font-bold mb-6">New Password</h1><form onsubmit="handleResetNew(event)"><input type="password" id="newResetPass" placeholder="New Password" class="w-full border p-3 mb-4 rounded" required><button class="bg-green-600 text-white w-full py-3 rounded">Update</button></form></div></div>
-    <div id="uploadModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center"><div class="bg-white p-6 rounded-lg w-[400px]"><h3 class="font-bold mb-4">Upload File</h3><input type="hidden" id="uploadType"><input type="file" id="fileInput" class="w-full border p-2 mb-4" accept=".xlsx,.csv"><button onclick="processFile()" class="bg-green-600 text-white w-full py-2 rounded">Upload</button><button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="mt-2 w-full text-gray-500">Cancel</button></div></div>
-    
+
+    <div id="uploadModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-[500px]">
+            <h3 class="font-bold mb-2">Bulk Upload</h3>
+            <p class="text-xs text-gray-500 mb-4">Excel Columns: RegNo, Name, [Exam/Status], [Marks]</p>
+            <select id="uploadType" class="w-full border p-2 mb-4 rounded"><option value="Attendance">Attendance</option><option value="Results">Results</option></select>
+            <input type="file" id="fileInput" class="w-full border p-2 mb-4" accept=".xlsx">
+            <button onclick="processFile()" class="bg-green-600 text-white w-full py-2 rounded">Upload</button>
+            <button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="w-full mt-2 text-gray-500">Cancel</button>
+        </div>
+    </div>
+
+    <div id="calendarModal" class="hidden fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-[500px]">
+            <div class="flex justify-between mb-4"><h3 class="font-bold" id="calTitle">Attendance</h3><button onclick="document.getElementById('calendarModal').classList.add('hidden')">&times;</button></div>
+            <div id="calendarContainer"></div>
+        </div>
+    </div>
+
     <script>
-        // 🟢 UPDATE URL 🟢
+        // 🟢 PASTE API URL HERE
         const API_URL = "https://script.google.com/macros/s/AKfycbwk4P4Q9DZDJ6ebGI64QLcGw5HONeBhUqDQ5wSnoSSZZ39icw5wxXGgr_3ggtpgplQ/exec";
         
         let currentUser = JSON.parse(localStorage.getItem('user'));
         let cache = {};
 
-        // --- INIT ---
-        window.onload = function() {
-            const params = new URLSearchParams(window.location.search);
-            if(params.has('resetToken')) {
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('resetScreen').classList.remove('hidden');
-                window.resetToken = params.get('resetToken'); window.resetEmail = params.get('email');
-            } else if (currentUser) {
-                initApp();
-            }
-        };
+        if (currentUser) initApp(); 
 
         function showRegister() { document.getElementById('loginSection').classList.add('hidden'); document.getElementById('registerSection').classList.remove('hidden'); }
-        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
 
-        // --- AUTH ---
         async function handleLogin(e) {
-            e.preventDefault(); const btn = document.getElementById('loginBtn'); btn.innerText = "Verifying...";
-            try { const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', uid: document.getElementById('uid').value, pass: document.getElementById('pass').value }) }); const data = await res.json();
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn'); btn.innerText = "Verifying...";
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', uid: document.getElementById('uid').value, pass: document.getElementById('pass').value }) });
+                const data = await res.json();
                 if(data.success) { localStorage.setItem('user', JSON.stringify(data)); location.reload(); } else { alert(data.message); btn.innerText = "LOGIN"; }
             } catch(e) { alert("Error"); btn.innerText = "LOGIN"; }
         }
-        async function handleRegister(e) { e.preventDefault(); document.getElementById('regBtn').innerText = "Processing..."; const fd = new FormData(e.target); const d = { action: 'registerStudent' }; fd.forEach((v,k)=>d[k]=v); const res = await fetch(API_URL, {method:'POST', body:JSON.stringify(d)}); const r = await res.json(); alert(r.message); if(r.success) location.reload(); }
-        async function handleForgotSubmit() { await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'forgotPassword', email: document.getElementById('forgotEmail').value, frontendUrl: window.location.href.split('?')[0] }) }); alert("Link Sent"); toggleModal('forgotModal'); }
-        async function handleResetNew(e) { e.preventDefault(); const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'resetPasswordWithToken', email: window.resetEmail, token: window.resetToken, newPass: document.getElementById('newResetPass').value }) }); const data = await res.json(); alert(data.message); if(data.success) window.location.href = window.location.pathname; }
+
+        async function handleRegister(e) {
+            e.preventDefault(); document.getElementById('regBtn').innerText = "Wait...";
+            const fd = new FormData(e.target); const d = { action: 'registerStudent' }; fd.forEach((v,k)=>d[k]=v);
+            const res = await fetch(API_URL, {method:'POST', body:JSON.stringify(d)});
+            const r = await res.json(); alert(r.message); if(r.success) location.reload();
+        }
 
         function initApp() {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('userDisplay').innerText = `${currentUser.name} (${currentUser.role})`;
-            const menu = currentUser.role === 'Admin' || currentUser.role === 'Teacher'
-                ? [ {id:'home',icon:'fa-chart-pie',l:'Dashboard'}, {id:'students',icon:'fa-user-graduate',l:'Students'}, {id:'teachers',icon:'fa-chalkboard-user',l:'Teachers'}, {id:'approvals',icon:'fa-check',l:'Approvals'}, {id:'attendance',icon:'fa-calendar-check',l:'Attendance'}, {id:'results',icon:'fa-file-alt',l:'Results'}, {id:'communication',icon:'fa-envelope',l:'Communication'}, {id:'settings',icon:'fa-cog',l:'Settings'} ]
-                : [{id:'home',icon:'fa-home',l:'My Dashboard'}, {id:'my-performance',icon:'fa-chart-line',l:'My Performance'}, {id:'settings',icon:'fa-cog',l:'Settings'}];
+            const menu = currentUser.role === 'Admin' 
+                ? [ {id:'home',icon:'fa-chart-pie',l:'Dashboard'}, {id:'students',icon:'fa-user-graduate',l:'Students'}, {id:'teachers',icon:'fa-chalkboard-user',l:'Teachers'}, {id:'approvals',icon:'fa-check',l:'Approvals'}, {id:'attendance',icon:'fa-calendar',l:'Attendance'}, {id:'results',icon:'fa-file-alt',l:'Results'} ]
+                : [{id:'home',icon:'fa-home',l:'My Dashboard'}];
             const nav = document.getElementById('sidebar'); nav.innerHTML = menu.map(m => `<button onclick="loadPage('${m.id}')" id="btn-${m.id}" class="w-full text-left px-6 py-3 hover:bg-slate-100 flex items-center gap-3"><i class="fa-solid ${m.icon}"></i> ${m.l}</button>`).join('');
             loadPage('home');
         }
 
         function loadPage(id) {
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-nav')); document.getElementById(`btn-${id}`)?.classList.add('active-nav');
-            document.getElementById('pageTitle').innerText = id.charAt(0).toUpperCase() + id.slice(1);
-            const c = document.getElementById('content'); c.innerHTML = '<div class="flex justify-center mt-20"><div class="loader"></div></div>';
-            if(id === 'home') renderHome(c); else if(id === 'students') renderList(c, 'getStudents', 'students'); else if(id === 'teachers') renderList(c, 'getTeachers', 'teachers'); else if(id === 'approvals') renderApprovals(c); else if(id === 'attendance') renderAttendance(c); else if(id === 'results') renderResults(c); else if(id === 'communication') renderCommunication(c); else if(id === 'settings') renderSettings(c); else if(id === 'my-performance') renderMyPerformance(c);
+            document.getElementById('pageTitle').innerText = id.toUpperCase();
+            const c = document.getElementById('content'); c.innerHTML = '<div class="text-center mt-20">Loading...</div>';
+            if(id === 'home') renderHome(c);
+            else if(id === 'students') renderList(c, 'getStudents', 'students');
+            else if(id === 'teachers') renderList(c, 'getTeachers', 'teachers');
+            else if(id === 'approvals') renderApprovals(c);
+            else if(id === 'attendance') renderAttendance(c);
+            else if(id === 'results') renderResults(c);
         }
 
-        // --- DASHBOARD ---
         async function renderHome(c) {
-            if(!cache.stats) { const res = await fetch(`${API_URL}?action=getInitData&role=${currentUser.role}`); const d = await res.json(); cache.stats = d.stats; cache.pending = d.pendingUsers; }
-            const d = cache.stats;
-            if(currentUser.role === 'Admin') c.innerHTML = `<div class="grid grid-cols-3 gap-6"><div class="glass-card p-6 border-l-4 border-indigo-500"><h3>Students</h3><p class="text-3xl font-bold">${d.students}</p></div><div class="glass-card p-6 border-l-4 border-blue-500"><h3>Teachers</h3><p class="text-3xl font-bold">${d.teachers}</p></div><div class="glass-card p-6 border-l-4 border-yellow-500"><h3>Pending</h3><p class="text-3xl font-bold">${d.pending}</p></div></div>`;
-            else c.innerHTML = `<div class="glass-card p-10 text-center"><h3>Welcome Back, ${currentUser.name}!</h3></div>`;
+            if(currentUser.role === 'Admin') {
+                if(!cache.stats) { const res = await fetch(`${API_URL}?action=getInitData&role=Admin`); const d=await res.json(); cache.stats=d.stats; cache.pending=d.pendingUsers; }
+                const d = cache.stats;
+                c.innerHTML = `<div class="grid grid-cols-3 gap-6"><div class="glass p-6 border-l-4 border-indigo-500"><h3>Students</h3><p class="text-3xl font-bold">${d.students}</p></div><div class="glass p-6 border-l-4 border-blue-500"><h3>Teachers</h3><p class="text-3xl font-bold">${d.teachers}</p></div><div class="glass p-6 border-l-4 border-yellow-500"><h3>Pending</h3><p class="text-3xl font-bold">${d.pending}</p></div></div>`;
+            } else {
+                const res = await fetch(`${API_URL}?action=getMyData&regNo=${currentUser.userId}`);
+                const data = await res.json();
+                let h = `<div class="glass p-6 mb-6"><h3 class="font-bold mb-4">My Attendance</h3><div class="calendar-grid">`;
+                data.attendance.forEach(r => { h+= `<div class="cal-day ${r.Status=='Present'?'status-P':'status-A'}">${r.Date.split(' ')[0]}<br>${r.Status[0]}</div>`; });
+                h += `</div></div><div class="glass p-6"><h3 class="font-bold mb-4">My Results</h3><table class="w-full text-sm"><thead><tr><th>Exam</th><th>Subject</th><th>Marks</th></tr></thead><tbody>`;
+                data.results.forEach(r => h+= `<tr><td>${r.ExamTitle}</td><td>${r.Subject}</td><td>${r.Marks}</td></tr>`);
+                h += `</tbody></table></div>`;
+                c.innerHTML = h;
+            }
         }
 
         async function renderList(c, action, type) {
             const res = await fetch(`${API_URL}?action=${action}`); const data = await res.json();
-            let h = `<div class="flex justify-between mb-4"><input onkeyup="filterTable('dataTable')" id="search" placeholder="Search..." class="border p-2 rounded w-64">${type === 'teachers' && currentUser.role === 'Admin' ? `<button onclick="document.getElementById('teacherModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-4 py-2 rounded">+ Add Teacher</button>` : ''}</div><div class="glass-card overflow-hidden"><table id="dataTable" class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">ID</th><th class="p-3">Name</th><th class="p-3">Info</th><th class="p-3">Action</th></tr></thead><tbody>`;
-            data.forEach(r => { const id = r.RegNo || r.ID; const name = r.FullName || r.Name; const extra = r.Course || r.Subject; h += `<tr><td class="p-3 font-mono">${id}</td><td class="p-3 font-bold">${name}</td><td class="p-3">${extra}<br><span class="text-xs text-gray-500">${r.Mobile}</span></td><td class="p-3"><button onclick="openEdit('${id}','${name}','${r.Mobile}','${extra}','${type}')" class="text-blue-600 hover:underline">Edit</button></td></tr>`; });
+            let h = `<div class="flex justify-between mb-4"><input placeholder="Search..." class="border p-2 rounded w-64">
+            ${type==='teachers' ? `<button onclick="document.getElementById('teacherModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-4 py-2 rounded">+ Add Teacher</button>` : ''}</div>
+            <div class="glass overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">ID</th><th class="p-3">Name</th><th class="p-3">Info</th><th class="p-3">Action</th></tr></thead><tbody>`;
+            data.forEach(r => {
+                const id = r.RegNo || r.ID; const name = r.FullName || r.Name; const extra = r.Course || r.Subject;
+                h += `<tr><td class="p-3 font-mono">${id}</td><td class="p-3 font-bold">${name}</td><td class="p-3">${extra}</td><td class="p-3"><button onclick="openEdit('${id}','${name}','${r.Mobile}','${extra}','${type}')" class="text-blue-600 hover:underline">Edit</button></td></tr>`;
+            });
             c.innerHTML = h + `</tbody></table></div>`;
         }
 
-        // --- ATTENDANCE (Updated with Calendar Logic) ---
         async function renderAttendance(c) {
-            // Fetch all attendance once to aggregate
-            const res = await fetch(`${API_URL}?action=getAttendance`);
-            const data = await res.json();
+            const res = await fetch(`${API_URL}?action=getAttendance`); const data = await res.json();
+            let summary = {}; data.forEach(r => { if(!summary[r.RegNo]) summary[r.RegNo]={name:r.Name, P:0, A:0}; if(r.Status=='Present') summary[r.RegNo].P++; else summary[r.RegNo].A++; });
             
-            // Aggregate Data by Student
-            let summary = {};
-            data.forEach(r => {
-                if(!summary[r.RegNo]) summary[r.RegNo] = { name: r.Name, course: r.Course, P:0, A:0, H:0, E:0, records: [] };
-                summary[r.RegNo].records.push(r);
-                if(r.Status === 'Present' || r.Status === 'P') summary[r.RegNo].P++;
-                else if(r.Status === 'Absent' || r.Status === 'A') summary[r.RegNo].A++;
-                else if(r.Status === 'Holiday' || r.Status === 'H') summary[r.RegNo].H++;
-                else summary[r.RegNo].E++;
-            });
-
-            let h = `<div class="glass-card p-6"><div class="flex justify-between mb-4"><h3 class="font-bold">Attendance Records</h3><div class="flex gap-2"><button onclick="document.getElementById('uploadModal').classList.remove('hidden'); document.getElementById('uploadType').value='Attendance'" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Bulk Upload</button></div></div>
-            <table class="w-full text-sm text-left"><thead class="bg-slate-100"><tr><th class="p-2">RegNo</th><th class="p-2">Name</th><th class="p-2">Course</th><th class="p-2 text-center text-green-600">P</th><th class="p-2 text-center text-red-600">A</th><th class="p-2">Action</th></tr></thead><tbody>`;
-            
-            Object.keys(summary).forEach(key => {
-                const s = summary[key];
-                h += `<tr><td class="p-2 font-mono">${key}</td><td class="p-2 font-bold">${s.name}</td><td class="p-2">${s.course}</td><td class="p-2 text-center font-bold">${s.P}</td><td class="p-2 text-center font-bold">${s.A}</td><td class="p-2"><button onclick="openCalendar('${key}', '${s.name}')" class="text-indigo-600 font-bold hover:underline">View</button></td></tr>`;
-            });
-            h += `</tbody></table></div>`;
-            c.innerHTML = h;
-            
-            // Save global data for modal usage
-            window.attendanceData = summary;
+            let h = `<div class="glass p-6"><div class="flex justify-between mb-4"><h3 class="font-bold">Attendance</h3><button onclick="document.getElementById('uploadModal').classList.remove('hidden');document.getElementById('uploadType').value='Attendance'" class="bg-indigo-600 text-white px-4 py-2 rounded">Bulk Upload</button></div>
+            <table class="w-full text-sm"><thead class="bg-slate-100"><tr><th>RegNo</th><th>Name</th><th>Present</th><th>Absent</th></tr></thead><tbody>`;
+            Object.keys(summary).forEach(k => { h += `<tr><td>${k}</td><td>${summary[k].name}</td><td class="text-green-600 font-bold">${summary[k].P}</td><td class="text-red-600 font-bold">${summary[k].A}</td></tr>`; });
+            c.innerHTML = h + `</tbody></table></div>`;
         }
 
-        function openCalendar(regNo, name) {
-            document.getElementById('calTitle').innerText = `Attendance: ${name}`;
-            const records = window.attendanceData[regNo].records;
-            const container = document.getElementById('calendarContainer');
-            container.innerHTML = ""; // Clear
+        function renderResults(c) { c.innerHTML = `<div class="glass p-10 text-center"><h3 class="font-bold mb-4">Exam Results</h3><button onclick="document.getElementById('uploadModal').classList.remove('hidden');document.getElementById('uploadType').value='Results'" class="bg-indigo-600 text-white px-4 py-2 rounded">Upload Excel File</button></div>`; }
 
-            // Get Current Month Days
-            const now = new Date();
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            
-            let gridHtml = `<div class="calendar-grid">`;
-            // Headers
-            ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => gridHtml += `<div class="text-xs font-bold text-gray-400 text-center">${d}</div>`);
-            
-            // Map records to dates (Simple approach: assumes YYYY-MM-DD match)
-            let statusMap = {};
-            records.forEach(r => {
-                // Ensure date parsing matches "yyyy-MM-dd" or "MM/dd/yyyy" from backend
-                const datePart = r.Date.split(' ')[0]; // Handle timestamps
-                statusMap[datePart] = r.Status;
-            });
-
-            for(let i=1; i<=daysInMonth; i++) {
-                // Construct date string to match backend format (Assuming backend sends YYYY-MM-DD)
-                // Adjust this format based on exactly what "markAttendance" saves.
-                const checkDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`; 
-                
-                // Flexible check (Scan keys if format varies)
-                let status = statusMap[checkDate] || '-';
-                // Try matching alternative formats if standard fails (e.g., 2/2/2026 vs 2026-02-02)
-                if(status === '-') {
-                     const altDate = new Date(checkDate).toLocaleDateString(); // e.g. 2/2/2026
-                     // Scan records
-                     const found = records.find(r => r.Date.includes(checkDate) || r.Date.includes(altDate));
-                     if(found) status = found.Status;
-                }
-
-                let colorClass = "bg-gray-50";
-                let label = i;
-                
-                if(status === 'Present' || status === 'P') { colorClass = "status-P"; label += "<br>P"; }
-                else if(status === 'Absent' || status === 'A') { colorClass = "status-A"; label += "<br>A"; }
-                else if(status === 'Holiday' || status === 'H') { colorClass = "status-H"; label += "<br>H"; }
-                else if(status === 'Leave' || status === 'E') { colorClass = "status-E"; label += "<br>E"; }
-
-                gridHtml += `<div class="cal-day ${colorClass}">${label}</div>`;
-            }
-            gridHtml += `</div>`;
-            container.innerHTML = gridHtml;
-            document.getElementById('calendarModal').classList.remove('hidden');
-        }
-
-        // --- STUDENT PERFORMANCE VIEW (UPDATED) ---
-        async function renderMyPerformance(c) {
-            const res = await fetch(`${API_URL}?action=getMyData&regNo=${currentUser.userId}`);
-            const data = await res.json();
-            
-            // Summary Cards
-            let p=0, a=0;
-            data.attendance.forEach(r => { if(r.Status=='Present'||r.Status=='P') p++; else a++; });
-
-            let h = `<div class="grid grid-cols-2 gap-4 mb-6"><div class="glass-card p-4 border-l-4 border-green-500"><h3>Present</h3><p class="text-2xl font-bold">${p}</p></div><div class="glass-card p-4 border-l-4 border-red-500"><h3>Absent</h3><p class="text-2xl font-bold">${a}</p></div></div>`;
-            
-            // Reuse logic? Just simpler list for student
-            h += `<div class="glass-card p-6 mb-4"><h3 class="font-bold mb-4">My Attendance Log</h3><div class="calendar-grid">`;
-            // Simple visualizer for student (Last 30 days logic or list)
-            data.attendance.slice(-30).forEach(r => {
-                 let color = r.Status.startsWith('P') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                 h += `<div class="p-2 rounded text-center text-xs font-bold ${color}">${r.Date.split(' ')[0]}<br>${r.Status}</div>`;
-            });
-            h += `</div></div>`;
-            
-            // Results
-            h += `<div class="glass-card p-6"><h3 class="font-bold mb-2">Exam Results</h3><table class="w-full text-sm"><thead><tr><th>Exam</th><th>Subject</th><th>Marks</th><th>Grade</th></tr></thead><tbody>`;
-            data.results.forEach(r => h+= `<tr><td>${r.ExamTitle}</td><td>${r.Subject}</td><td class="text-center">${r.Marks}</td><td class="text-center font-bold">${r.Grade}</td></tr>`);
-            h += `</tbody></table></div>`;
-            c.innerHTML = h;
-        }
-
-        // --- OTHER FUNCTIONS (Results, Edit, Upload, Email - Kept same) ---
-        function renderResults(c) { c.innerHTML = `<div class="glass-card p-10 text-center"><h3 class="font-bold mb-4">Exam Results</h3><button onclick="document.getElementById('uploadModal').classList.remove('hidden'); document.getElementById('uploadType').value='Results'" class="bg-indigo-600 text-white px-4 py-2 rounded">Bulk Upload</button></div>`; }
+        // --- ACTIONS ---
         function openEdit(id, name, mobile, extra, type) { document.getElementById('editId').value = id; document.getElementById('editType').value = type; document.getElementById('editName').value = name; document.getElementById('editMobile').value = mobile; document.getElementById('editExtra').value = extra; document.getElementById('editModal').classList.remove('hidden'); }
-        async function submitEdit(e) { e.preventDefault(); const id = document.getElementById('editId').value; const type = document.getElementById('editType').value; const payload = type === 'students' ? {action:'updateStudent', regNo: id, name: document.getElementById('editName').value, mobile: document.getElementById('editMobile').value, course: document.getElementById('editExtra').value} : {action:'updateTeacher', id: id, name: document.getElementById('editName').value, mobile: document.getElementById('editMobile').value, subject: document.getElementById('editExtra').value}; await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }); alert("Updated"); document.getElementById('editModal').classList.add('hidden'); loadPage(type); }
-        async function submitTeacher(e) { e.preventDefault(); const fd = new FormData(e.target); const d={action:'registerTeacher'}; fd.forEach((v,k)=>d[k]=v); await fetch(API_URL, {method:'POST', body:JSON.stringify(d)}); alert("Added"); document.getElementById('teacherModal').classList.add('hidden'); loadPage('teachers'); }
-        async function processFile() { const file = document.getElementById('fileInput').files[0]; const type = document.getElementById('uploadType').value; const reader = new FileReader(); reader.onload = async (e) => { const workbook = XLSX.read(e.target.result, {type: 'binary'}); const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]); const records = jsonData.map(r => ({ regNo: r.RegNo || r.ID, name: r.Name, status: r.Status || 'Present', exam: r.Exam, course: r.Course, subject: r.Subject, marks: r.Marks, grade: r.Grade })); await fetch(API_URL, { method: 'POST', body: JSON.stringify({action: 'bulkUpload', type, uploader: currentUser.name, records})}); alert("Uploaded!"); document.getElementById('uploadModal').classList.add('hidden'); }; reader.readAsBinaryString(file); }
-        async function renderApprovals(c) { const data = cache.pending || []; let h = `<div class="glass-card p-4"><h3 class="font-bold mb-4">Requests</h3><table class="w-full text-sm"><tbody>`; if(data.length==0) h += `<tr><td>No pending requests.</td></tr>`; else data.forEach(s => h += `<tr><td class="p-3">${s.name}</td><td class="p-3 text-right"><button onclick="act('${s.regNo}','approveUser')" class="bg-green-100 text-green-700 px-2 rounded mr-2">Approve</button></td></tr>`); c.innerHTML = h + `</tbody></table></div>`; }
-        async function act(id, action) { if(confirm("Proceed?")) { await fetch(API_URL, {method:'POST', body:JSON.stringify({action, userId:id})}); loadPage('approvals'); } }
-        function renderSettings(c) { c.innerHTML = `<div class="glass-card p-6 max-w-md"><h3 class="font-bold mb-4">Change Password</h3><form onsubmit="changePass(event)" class="space-y-4"><input name="oldPass" placeholder="Current Password" type="password" class="w-full border p-2 rounded" required><input name="newPass" placeholder="New Password" type="password" class="w-full border p-2 rounded" required><button class="bg-indigo-600 text-white w-full py-2 rounded">Update</button></form></div>`; }
-        async function changePass(e) { e.preventDefault(); const fd = new FormData(e.target); const d={action:'changePassword', userId: currentUser.userId, role: currentUser.role}; fd.forEach((v,k)=>d[k]=v); const res = await fetch(API_URL, {method:'POST', body:JSON.stringify(d)}); const r = await res.json(); alert(r.message); e.target.reset(); }
-        async function renderCommunication(c) { const res = await fetch(`${API_URL}?action=getEmailLogs`); const logs = await res.json(); let h = `<div class="flex justify-between mb-6"><h3 class="font-bold text-lg">Email History</h3><button onclick="document.getElementById('emailModal').classList.remove('hidden')" class="bg-indigo-600 text-white px-4 py-2 rounded font-bold">+ Compose</button></div><div class="glass-card overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-slate-100"><tr><th class="p-3">Date</th><th class="p-3">To</th><th class="p-3">Subject</th><th class="p-3">Status</th></tr></thead><tbody>`; logs.reverse().forEach(l => { h += `<tr><td class="p-3 text-xs text-gray-500">${l.Date}</td><td class="p-3 font-bold">${l.Recipient}</td><td class="p-3">${l.Subject}</td><td class="p-3"><span class="${l.Status=='Sent'?'text-green-600':'text-red-600'} font-bold">${l.Status}</span></td></tr>`; }); c.innerHTML = h + `</tbody></table></div>`; }
-        function filterTable(id) { const term = event.target.value.toLowerCase(); document.querySelectorAll(`#${id} tbody tr`).forEach(r => r.style.display = r.innerText.toLowerCase().includes(term) ? '' : 'none'); }
+        async function submitEdit(e) { e.preventDefault(); const type = document.getElementById('editType').value; const action = type === 'students' ? 'updateStudent' : 'updateTeacher'; const payload = type === 'students' ? {action, regNo: document.getElementById('editId').value, name: document.getElementById('editName').value, mobile: document.getElementById('editMobile').value, course: document.getElementById('editExtra').value} : {action, id: document.getElementById('editId').value, name: document.getElementById('editName').value, mobile: document.getElementById('editMobile').value, subject: document.getElementById('editExtra').value}; await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }); alert("Updated"); document.getElementById('editModal').classList.add('hidden'); loadPage(type); }
+        async function submitTeacher(e) { e.preventDefault(); const fd = new FormData(e.target); const d={action:'registerTeacher'}; fd.forEach((v,k)=>d[k]=v); await fetch(API_URL, {method:'POST', body:JSON.stringify(d)}); alert("Added"); location.reload(); }
+        async function processFile() { const file = document.getElementById('fileInput').files[0]; const type = document.getElementById('uploadType').value; const reader = new FileReader(); reader.onload = async (e) => { const workbook = XLSX.read(e.target.result, {type: 'binary'}); const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]); const records = jsonData.map(r => ({ RegNo: r.RegNo, Name: r.Name, Status: r.Status, Exam: r.Exam, Course: r.Course, Subject: r.Subject, Marks: r.Marks, Grade: r.Grade })); await fetch(API_URL, { method: 'POST', body: JSON.stringify({action: 'bulkUpload', type, uploader: currentUser.name, records})}); alert("Uploaded!"); location.reload(); }; reader.readAsBinaryString(file); }
+        async function renderApprovals(c) { const data = cache.pending || []; let h = `<div class="glass p-4"><h3 class="font-bold mb-4">Requests</h3><table class="w-full text-sm"><tbody>`; if(data.length==0) h += `<tr><td>No pending requests.</td></tr>`; else data.forEach(s => h += `<tr><td class="p-3">${s.name}</td><td class="p-3 text-right"><button onclick="act('${s.regNo}','approveUser')" class="bg-green-100 text-green-700 px-3 py-1 rounded">Approve</button></td></tr>`); c.innerHTML = h + `</tbody></table></div>`; }
+        async function act(id, action) { if(confirm("Confirm?")) { await fetch(API_URL, {method:'POST', body:JSON.stringify({action, userId:id})}); loadPage('approvals'); } }
         function logout() { localStorage.clear(); location.reload(); }
-        async function sendEmail(e) { e.preventDefault(); const fd=new FormData(e.target); const d={action:'sendEmail', senderName:currentUser.name}; fd.forEach((v,k)=>d[k]=v); await fetch(API_URL, {method:'POST', body:JSON.stringify(d)}); alert("Emails Sent!"); location.reload(); }
     </script>
 </body>
 </html>
