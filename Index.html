@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chennai Institute of Technology & Science — ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Noto+Sans+Tamil:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN SYSTEM — CITS ERP (GLASSMORPHISM)
+   Theme: Frosted Academic Luxury
+═══════════════════════════════════════════════ */
+:root {
+  /* Core Palette */
+  --ink:       #0e1117;
+  --navy:      #111827;
+  --navy-mid:  #1a2744;
+  --gold:      #d4a853;
+  --gold-lite: #f0c87a;
+  --amber:     #e8963a;
+  --ivory:     #faf8f3;
+  --crimson:   #9b1c1c;
+  --crimson-l: #c53030;
+  --teal:      #0e7490;
+  --sage:      #166534;
+  --text-1:    #0e1117;
+  --text-2:    #374151;
+  --text-3:    #6b7280;
+  --text-4:    #9ca3af;
+
+  /* GLASSMORPHISM VARIABLES */
+  --glass-bg:        rgba(255, 255, 255, 0.65);
+  --glass-bg-hover:  rgba(255, 255, 255, 0.85);
+  --glass-dark:      rgba(17, 24, 39, 0.75);
+  --glass-border:    rgba(255, 255, 255, 0.6);
+  --glass-border-dk: rgba(255, 255, 255, 0.1);
+  --glass-blur:      blur(20px);
+  --glass-shadow:    0 8px 32px 0 rgba(14, 17, 23, 0.08);
+
+  /* Layout */
+  --radius-sm: 6px;
+  --radius:    12px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --sidebar-w: 268px;
+  --topbar-h:  68px;
+  --trans:     .25s cubic-bezier(.4,0,.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: 'DM Sans', 'Noto Sans Tamil', sans-serif;
+  background-color: #f0eade; /* Base fallback */
+  color: var(--text-1);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ─── GLOBAL GLASS BACKGROUND ORBS ─── */
+body::before, body::after, .bg-orb-3 {
+  content: ''; position: fixed; border-radius: 50%;
+  filter: blur(90px); z-index: -1; opacity: 0.6;
+  animation: floatOrb 15s infinite alternate ease-in-out;
+}
+body::before {
+  width: 50vw; height: 50vw; background: rgba(212, 168, 83, 0.3); /* Gold */
+  top: -10vh; left: -10vw;
+}
+body::after {
+  width: 40vw; height: 40vw; background: rgba(155, 28, 28, 0.2); /* Crimson */
+  bottom: -10vh; right: -5vw; animation-delay: -5s;
+}
+.bg-orb-3 {
+  width: 35vw; height: 35vw; background: rgba(14, 116, 144, 0.2); /* Teal */
+  top: 40vh; left: 30vw; animation-delay: -2s;
+}
+
+@keyframes floatOrb {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(50px, -50px) scale(1.1); }
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(14, 17, 23, 0.2); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ─── UTILITIES ─── */
+.hidden { display: none !important; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.gap-6  { gap: 6px; }
+.gap-8  { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.w-full { width: 100%; }
+.text-center { text-align: center; }
+.font-serif { font-family: 'Playfair Display', serif; }
+.font-mono  { font-family: 'DM Mono', monospace; }
+
+/* ═══ BUTTONS ═══════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 18px; border-radius: var(--radius);
+  font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 600;
+  border: 1px solid transparent; cursor: pointer;
+  transition: all var(--trans); text-decoration: none;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.btn:active { transform: scale(.97); }
+
+.btn-primary { background: rgba(155, 28, 28, 0.9); color: #fff; border-color: rgba(255,255,255,0.2); box-shadow: 0 4px 15px rgba(155,28,28,.3); }
+.btn-primary:hover { background: rgba(155, 28, 28, 1); transform: translateY(-2px); }
+
+.btn-gold { background: linear-gradient(135deg, rgba(212,168,83,0.9), rgba(232,150,58,0.9)); color: var(--navy); border-color: rgba(255,255,255,0.4); box-shadow: 0 4px 15px rgba(212,168,83,.3); }
+.btn-gold:hover { transform: translateY(-2px); }
+
+.btn-teal { background: rgba(14, 116, 144, 0.9); color: #fff; }
+.btn-sage { background: rgba(22, 101, 52, 0.9); color: #fff; }
+
+.btn-ghost { background: rgba(255,255,255,0.3); color: var(--text-2); border: 1px solid var(--glass-border); }
+.btn-ghost:hover { background: rgba(255,255,255,0.6); color: var(--navy); }
+
+.btn-outline { background: transparent; color: var(--crimson); border: 1.5px solid var(--crimson); }
+.btn-outline:hover { background: var(--crimson); color: #fff; }
+
+.btn-danger { background: rgba(155,28,28,0.9); color: #fff; }
+.btn-success { background: rgba(22,101,52,0.9); color: #fff; }
+
+.btn-sm  { padding: 6px 13px; font-size: 12.5px; }
+.btn-xs  { padding: 4px 10px; font-size: 11.5px; border-radius: var(--radius-sm); }
+.btn-lg  { padding: 12px 24px; font-size: 15px; }
+.btn-xl  { padding: 15px 32px; font-size: 16px; border-radius: var(--radius-lg); }
+.btn-icon { width: 34px; height: 34px; padding: 0; justify-content: center; border-radius: var(--radius-sm); }
+
+/* ═══ BADGES ════════════════════════════════════ */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  letter-spacing: .5px; backdrop-filter: blur(5px);
+}
+.badge-success { background: rgba(209, 250, 229, 0.8); border: 1px solid rgba(6, 95, 70, 0.2); color: #065f46; }
+.badge-danger  { background: rgba(254, 226, 226, 0.8); border: 1px solid rgba(153, 27, 27, 0.2); color: #991b1b; }
+.badge-warning { background: rgba(254, 243, 199, 0.8); border: 1px solid rgba(146, 64, 14, 0.2); color: #92400e; }
+.badge-info    { background: rgba(219, 234, 254, 0.8); border: 1px solid rgba(30, 64, 175, 0.2); color: #1e40af; }
+.badge-navy    { background: rgba(17, 24, 39, 0.8); color: var(--gold); }
+
+/* ═══ GLASS CARDS ══════════════════════════════════════ */
+.card, .stat-card, .chart-card, .dept-card, .notice-card, .email-compose {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  padding: 24px;
+  transition: transform var(--trans), box-shadow var(--trans);
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.card-title { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: var(--navy); }
+
+/* ═══ FORMS (GLASSY) ══════════════════════════════════════ */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+.form-control {
+  width: 100%; padding: 11px 16px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius);
+  font-size: 14px; font-family: 'DM Sans', sans-serif;
+  color: var(--text-1); transition: all var(--trans);
+  outline: none; backdrop-filter: blur(5px);
+}
+.form-control:focus { background: rgba(255, 255, 255, 0.7); border-color: var(--gold); box-shadow: 0 0 0 4px rgba(212,168,83,.2); }
+.form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.pw-wrap { position: relative; }
+.pw-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-3); cursor: pointer; }
+
+/* ═══ TABLES ═════════════════════════════════════ */
+.table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.3); backdrop-filter: blur(10px); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1; }
+thead th { padding: 14px 16px; color: var(--gold); font-size: 11.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-align: left; }
+tbody tr { border-bottom: 1px solid rgba(0,0,0,0.05); transition: background var(--trans); }
+tbody tr:hover { background: rgba(255, 255, 255, 0.5); }
+td { padding: 14px 16px; vertical-align: middle; color: var(--text-1); }
+
+/* ═══ MODAL (GLASSY) ══════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(14,17,23,.4); backdrop-filter: blur(8px);
+  z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn .2s;
+}
+.modal {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+  width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto;
+  animation: slideUp .3s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-lg { max-width: 880px; }
+.modal-header { padding: 22px 26px 18px; border-bottom: 1px solid rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: rgba(255,255,255,0.9); z-index: 2; border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--navy); }
+.modal-body    { padding: 24px 26px; }
+.modal-footer  { padding: 18px 26px; border-top: 1px solid rgba(0,0,0,0.08); display: flex; gap: 10px; justify-content: flex-end; background: rgba(255,255,255,0.5); }
+.modal-close   { background: rgba(0,0,0,0.05); border: none; font-size: 16px; color: var(--text-2); cursor: pointer; width: 32px; height: 32px; border-radius: 50%; transition: all var(--trans); }
+.modal-close:hover { background: var(--crimson); color: #fff; transform: rotate(90deg); }
+
+/* ═══ TOAST ══════════════════════════════════════ */
+#toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast {
+  padding: 14px 20px; border-radius: var(--radius); font-size: 13.5px; font-weight: 600;
+  display: flex; align-items: center; gap: 12px; min-width: 280px; max-width: 380px;
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(15px); border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1); animation: slideInRight .3s ease; border-left: 5px solid transparent;
+}
+.toast.success { border-left-color: var(--sage); color: var(--sage); }
+.toast.error   { border-left-color: var(--crimson); color: var(--crimson); }
+.toast.info    { border-left-color: var(--teal); color: var(--teal); }
+.toast.warning { border-left-color: var(--amber); color: #92400e; }
+.toast.fade-out { animation: fadeOut .3s ease forwards; }
+
+/* ═══ ANIMATIONS ══════════════════════════════════ */
+@keyframes fadeIn      { from{opacity:0} to{opacity:1} }
+@keyframes slideUp     { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:none} }
+@keyframes slideInRight{ from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:none} }
+@keyframes fadeOut     { from{opacity:1;transform:none} to{opacity:0;transform:translateX(60px)} }
+@keyframes scaleIn     { from{transform:scale(.95);opacity:0} to{transform:scale(1);opacity:1} }
+@keyframes pulse       { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+/* ══════════════════════════════════════════════════
+   LOGIN PAGE (GLASSMORPHISM)
+══════════════════════════════════════════════════ */
+#login-page { min-height: 100vh; display: flex; position: relative; z-index: 10; }
+
+.login-left { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px 48px; }
+.login-crest {
+  width: 120px; height: 120px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center; margin-bottom: 28px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+.crest-inner { width: 90px; height: 90px; border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--navy); background: rgba(255,255,255,0.5); }
+.login-uni-name { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 800; color: var(--navy); text-align: center; line-height: 1.2; margin-bottom: 6px; text-shadow: 0 2px 10px rgba(255,255,255,0.5); }
+.login-uni-name span { color: var(--crimson); }
+.login-uni-sub { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-2); text-align: center; margin-bottom: 8px; font-weight: 600; }
+.login-tamil { font-family: 'Noto Sans Tamil', sans-serif; font-size: 17px; color: var(--text-3); text-align: center; margin-bottom: 48px; }
+
+.login-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 380px; margin-bottom: 32px; }
+.login-kpi { background: rgba(255,255,255,0.4); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 18px 14px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.login-kpi-num { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--crimson); font-weight: 700; line-height: 1; }
+.login-kpi-label { font-size: 11.5px; color: var(--text-2); margin-top: 6px; font-weight: 600; text-transform: uppercase; }
+
+.login-right {
+  width: 480px; min-height: 100vh;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+  border-left: 1px solid rgba(255, 255, 255, 0.6);
+  display: flex; flex-direction: column; justify-content: center; padding: 48px 50px;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+}
+.login-greeting { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--navy); font-weight: 800; margin-bottom: 4px; }
+.login-greeting span { color: var(--crimson); font-style: italic; }
+.login-greeting-sub { font-size: 14px; color: var(--text-2); margin-bottom: 32px; }
+
+.role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+.role-card {
+  padding: 14px 10px; border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.5);
+  cursor: pointer; text-align: center; transition: all var(--trans);
+}
+.role-card:hover { background: rgba(255,255,255,0.8); transform: translateY(-2px); }
+.role-card.active { border-color: var(--crimson); background: rgba(255,255,255,0.9); box-shadow: 0 4px 15px rgba(155,28,28,.15); }
+.role-card .r-icon { font-size: 24px; margin-bottom: 6px; }
+.role-card .r-label { font-size: 13px; font-weight: 600; color: var(--navy); }
+
+/* ─── MAIN APP (GLASSMORPHISM) ─── */
+.sidebar {
+  width: var(--sidebar-w); min-height: 100vh;
+  background: var(--glass-dark);
+  backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+  border-right: 1px solid rgba(255,255,255,0.1);
+  display: flex; flex-direction: column; position: fixed; left: 0; top: 0; bottom: 0; z-index: 200;
+}
+.sidebar-header { padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.brand-mark { width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; }
+.brand-name { font-family: 'Playfair Display', serif; font-size: 16px; color: #fff; font-weight: 700; line-height: 1.2; }
+.nav-group-label { padding: 16px 20px 6px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.4); font-weight: 700; }
+.nav-link { display: flex; align-items: center; gap: 12px; padding: 11px 20px; margin: 2px 12px; border-radius: 10px; color: rgba(255,255,255,.7); font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s; }
+.nav-link:hover { background: rgba(255,255,255,.1); color: #fff; }
+.nav-link.active { background: rgba(212,168,83,.2); color: var(--gold-lite); border: 1px solid rgba(212,168,83,.3); }
+
+.topbar {
+  position: fixed; top: 0; left: var(--sidebar-w); right: 0; height: var(--topbar-h);
+  background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  display: flex; align-items: center; padding: 0 32px; gap: 16px; z-index: 100;
+}
+.main-content { margin-left: var(--sidebar-w); margin-top: var(--topbar-h); padding: 32px; min-height: calc(100vh - var(--topbar-h)); background: transparent; z-index: 10; position: relative; }
+
+/* ─── DASHBOARD STATS ─── */
+.stat-card { padding: 24px; }
+.stat-icon-wrap { width: 48px; height: 48px; border-radius: 12px; font-size: 20px; margin-bottom: 16px; backdrop-filter: blur(5px); }
+.c-red  .stat-icon-wrap { background: rgba(155,28,28,.15); color: var(--crimson); border: 1px solid rgba(155,28,28,.2); }
+.c-gold .stat-icon-wrap { background: rgba(212,168,83,.2); color: #9c6c17; border: 1px solid rgba(212,168,83,.3); }
+.c-teal .stat-icon-wrap { background: rgba(14,116,144,.15); color: var(--teal); border: 1px solid rgba(14,116,144,.2); }
+.c-sage .stat-icon-wrap { background: rgba(22,101,52,.15); color: var(--sage); border: 1px solid rgba(22,101,52,.2); }
+
+/* ─── TABS ─── */
+.tabs { display: flex; gap: 4px; border-bottom: 2px solid rgba(0,0,0,0.05); margin-bottom: 24px; }
+.tab-btn { padding: 12px 24px; font-size: 14px; color: var(--text-2); border-bottom: 3px solid transparent; }
+.tab-btn.active { color: var(--crimson); border-bottom-color: var(--crimson); font-weight: 700; }
+
+/* ─── CHATBOT GLASS ─── */
+#chatbot-window { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.8); }
+.chat-hdr { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(10px); }
+.chat-msg.bot .chat-bubble { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255,255,255,0.9); }
+.chat-input-row { background: rgba(255,255,255,0.5); border-top: 1px solid rgba(255,255,255,0.6); }
+
+/* Missing Background Elements added to HTML below */
+</style>
+</head>
+<body>
+
+<div class="bg-orb-3"></div>
+
+<div id="toast-container"></div>
+
+<div class="notif-panel" id="notif-panel" style="background:rgba(255,255,255,0.75); backdrop-filter:blur(25px); border-left:1px solid rgba(255,255,255,0.6);">
+  <div class="notif-panel-hdr">
+    <span class="notif-hdr-title">Notifications</span>
+    <button class="btn btn-xs btn-ghost" onclick="closeNotifPanel()">✕ Close</button>
+  </div>
+  <div id="notif-list" style="overflow-y:auto;flex:1;"></div>
+</div>
+
+<div id="login-page">
+  <div class="login-left">
+    <div class="login-crest">
+      <div class="crest-inner">CITS</div>
+    </div>
+    <div class="login-uni-name">Chennai Institute of<br><span>Technology & Science</span></div>
+    <div class="login-uni-sub">Chennai, Tamil Nadu · Estd. 1984</div>
+    <div class="login-tamil">அறிவே ஆற்றல் · கல்வியே வெற்றி</div>
+    
+    <div class="login-kpi-grid">
+      <div class="login-kpi"><div class="login-kpi-num">12,400+</div><div class="login-kpi-label">Students</div></div>
+      <div class="login-kpi"><div class="login-kpi-num">680+</div><div class="login-kpi-label">Faculty</div></div>
+      <div class="login-kpi"><div class="login-kpi-num">42</div><div class="login-kpi-label">Departments</div></div>
+      <div class="login-kpi"><div class="login-kpi-num">NAAC A+</div><div class="login-kpi-label">Grade</div></div>
+    </div>
+  </div>
+
+  <div class="login-right">
+    <div class="login-greeting">Welcome <span>back.</span></div>
+    <div class="login-greeting-sub">Sign in to the CITS ERP Portal</div>
+
+    <div class="ftabs">
+      <button class="ftab active" onclick="switchFtab('signin',this)">Sign In</button>
+      <button class="ftab" onclick="switchFtab('register',this)">Register</button>
+    </div>
+
+    <div id="ftab-signin">
+      <div class="role-selector">
+        <div class="role-card active" onclick="selectRole(this,'admin')" data-role="admin"><div class="r-icon">👨‍💼</div><div class="r-label">Admin</div></div>
+        <div class="role-card" onclick="selectRole(this,'teacher')" data-role="teacher"><div class="r-icon">👩‍🏫</div><div class="r-label">Faculty</div></div>
+        <div class="role-card" onclick="selectRole(this,'student')" data-role="student"><div class="r-icon">👨‍🎓</div><div class="r-label">Student</div></div>
+        <div class="role-card" onclick="selectRole(this,'parent')" data-role="parent"><div class="r-icon">👨‍👩‍👦</div><div class="r-label">Parent</div></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="login-email" class="form-control" placeholder="your@cits.ac.in">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="login-pw" class="form-control" placeholder="Enter your password">
+          <button class="pw-toggle" onclick="togglePw('login-pw',this)"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;font-weight:600;"><input type="checkbox" style="accent-color:var(--crimson);width:16px;height:16px;"> Remember me</label>
+        <a href="#" onclick="showForgot()" style="font-size:13px;color:var(--crimson);text-decoration:none;font-weight:700;">Forgot password?</a>
+      </div>
+      <button class="btn btn-primary btn-xl w-full" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Sign In to Portal</button>
+      
+      <p style="text-align:center;font-size:12px;color:var(--text-3);margin:24px 0 10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Quick Demo Access</p>
+      <div class="demo-grid">
+        <div class="demo-key" onclick="fillDemo('admin@cits.ac.in','Admin@2024')"><strong>👨‍💼 Admin</strong><small>admin@cits.ac.in</small></div>
+        <div class="demo-key" onclick="fillDemo('faculty@cits.ac.in','Faculty@123')"><strong>👩‍🏫 Faculty</strong><small>faculty@cits.ac.in</small></div>
+        <div class="demo-key" onclick="fillDemo('student@cits.ac.in','Student@123')"><strong>👨‍🎓 Student</strong><small>student@cits.ac.in</small></div>
+        <div class="demo-key" onclick="fillDemo('parent@cits.ac.in','Parent@123')"><strong>👨‍👩‍👦 Parent</strong><small>parent@cits.ac.in</small></div>
+      </div>
+    </div>
+
+    <div id="ftab-register" class="hidden">
+      <div class="reg-steps" id="reg-steps">
+        <div class="reg-step active"></div>
+        <div class="reg-step"></div>
+        <div class="reg-step"></div>
+      </div>
+      <div id="reg-s1">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Registration No. *</label><input type="text" id="r_regNo" class="form-control" placeholder="24CITS001"></div>
+          <div class="form-group"><label class="form-label">Full Name *</label><input type="text" id="r_fullName" class="form-control" placeholder="Legal full name"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Email *</label><input type="email" id="r_email" class="form-control" placeholder="student@cits.ac.in"></div>
+          <div class="form-group"><label class="form-label">Mobile *</label><input type="tel" id="r_mobile" class="form-control" placeholder="+91 9876543210"></div>
+        </div>
+        <button class="btn btn-gold btn-lg w-full" onclick="nextRegStep(1)">Continue <i class="fas fa-arrow-right"></i></button>
+      </div>
+      <div id="reg-s2" class="hidden">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Department *</label>
+            <select id="r_dept" class="form-control"><option>Computer Science & Engineering</option><option>Electronics & Communication</option><option>Mechanical Engineering</option><option>Civil Engineering</option><option>Information Technology</option><option>Electrical Engineering</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">Year *</label>
+            <select id="r_year" class="form-control"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="r_dob" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Gender</label><select id="r_gender" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="prevRegStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+          <button class="btn btn-gold" style="flex:1" onclick="nextRegStep(2)">Continue <i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+      <div id="reg-s3" class="hidden">
+        <div class="form-group"><label class="form-label">Create Password *</label>
+          <div class="pw-wrap"><input type="password" id="r_pw" class="form-control" placeholder="Min. 8 characters"><button class="pw-toggle" onclick="togglePw('r_pw',this)"><i class="fas fa-eye"></i></button></div>
+        </div>
+        <div class="form-group"><label class="form-label">Permanent Address</label><textarea id="r_address" class="form-control" rows="2" placeholder="Full address"></textarea></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="prevRegStep(3)"><i class="fas fa-arrow-left"></i> Back</button>
+          <button class="btn btn-primary" style="flex:1" onclick="doRegister()"><i class="fas fa-user-plus"></i> Submit Registration</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="forgot-page" class="hidden" style="background:transparent;">
+  <div class="forgot-card" style="background:rgba(255,255,255,0.65);backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,0.8);">
+    <div class="text-center" style="margin-bottom:24px;">
+      <div class="login-uni-name" style="font-size:26px;color:var(--navy);margin-bottom:4px;">Reset Password</div>
+      <p style="font-size:13px;color:var(--text-2);font-weight:600;">CITS ERP Portal</p>
+    </div>
+    <div class="step-row">
+      <div class="step-dot active" id="sd1">1</div>
+      <div class="step-line" id="sl1"></div>
+      <div class="step-dot" id="sd2">2</div>
+      <div class="step-line" id="sl2"></div>
+      <div class="step-dot" id="sd3">3</div>
+    </div>
+    <div id="fp-s1">
+      <div class="form-group"><label class="form-label">Email Address</label><input type="email" id="fp-email" class="form-control" placeholder="your@cits.ac.in"></div>
+      <button class="btn btn-primary btn-lg w-full" onclick="sendOTP()"><i class="fas fa-paper-plane"></i> Send OTP</button>
+      <button class="btn btn-ghost w-full" style="margin-top:12px;" onclick="showLogin()"><i class="fas fa-arrow-left"></i> Back to Login</button>
+    </div>
+    <div id="fp-s2" class="hidden">
+      <p style="text-align:center;font-weight:700;color:var(--navy);margin-bottom:18px;" id="fp-email-show"></p>
+      <div class="otp-row" id="otp-inputs">
+        <input class="otp-digit" maxlength="1" oninput="otpNext(this,0)" onkeydown="otpBack(this,0)">
+        <input class="otp-digit" maxlength="1" oninput="otpNext(this,1)" onkeydown="otpBack(this,1)">
+        <input class="otp-digit" maxlength="1" oninput="otpNext(this,2)" onkeydown="otpBack(this,2)">
+        <input class="otp-digit" maxlength="1" oninput="otpNext(this,3)" onkeydown="otpBack(this,3)">
+        <input class="otp-digit" maxlength="1" oninput="otpNext(this,4)" onkeydown="otpBack(this,4)">
+        <input class="otp-digit" maxlength="1" oninput="otpNext(this,5)" onkeydown="otpBack(this,5)">
+      </div>
+      <p style="text-align:center;font-size:12.5px;color:var(--text-3);margin-top:8px;">Expires in <span id="otp-timer" style="font-family:'DM Mono',monospace;color:var(--crimson);font-weight:600;">10:00</span></p>
+      <button class="btn btn-primary btn-lg w-full" style="margin-top:16px;" onclick="verifyOTP()"><i class="fas fa-check"></i> Verify OTP</button>
+      <button class="btn btn-ghost w-full" style="margin-top:8px;" onclick="resendOTP()">Resend OTP</button>
+    </div>
+    <div id="fp-s3" class="hidden">
+      <div class="form-group"><label class="form-label">New Password</label><div class="pw-wrap"><input type="password" id="fp-pw1" class="form-control" placeholder="Minimum 8 characters"><button class="pw-toggle" onclick="togglePw('fp-pw1',this)"><i class="fas fa-eye"></i></button></div></div>
+      <div class="form-group"><label class="form-label">Confirm Password</label><input type="password" id="fp-pw2" class="form-control" placeholder="Confirm password"></div>
+      <button class="btn btn-primary btn-lg w-full" onclick="resetPassword()"><i class="fas fa-lock"></i> Save Password</button>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 22 22"><path d="M11 1L21 6V17L11 21L1 17V6Z" opacity=".5"/><text x="11" y="15" text-anchor="middle" font-size="9" font-weight="bold" font-family="serif" fill="#fff">CITS</text></svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">CITS Chennai<small>ERP Portal</small></div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar" id="sb-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name truncate" id="sb-username">Loading…</div>
+          <div class="user-role" id="sb-role" style="color:rgba(255,255,255,0.5)">Role</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+  </aside>
+
+  <header class="topbar" id="topbar">
+    <button class="topbar-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-actions">
+      <div class="topbar-clock font-mono" id="topbar-clock">00:00:00</div>
+      <button class="topbar-btn" onclick="toggleNotifPanel()"><i class="fas fa-bell"></i><div class="notif-pip" id="notif-pip"></div></button>
+      <button class="topbar-btn" onclick="showSection('settings')"><i class="fas fa-cog"></i></button>
+    </div>
+  </header>
+
+  <main class="main-content" id="main-content">
+    <div id="section-overview"     class="section"></div>
+    <div id="section-students"     class="section hidden"></div>
+    <div id="section-faculty"      class="section hidden"></div>
+    <div id="section-attendance"   class="section hidden"></div>
+    <div id="section-results"      class="section hidden"></div>
+    <div id="section-fees"         class="section hidden"></div>
+    <div id="section-email"        class="section hidden"></div>
+    <div id="section-announcements"class="section hidden"></div>
+    <div id="section-timetable"    class="section hidden"></div>
+    <div id="section-departments"  class="section hidden"></div>
+    <div id="section-calendar"     class="section hidden"></div>
+    <div id="section-approvals"    class="section hidden"></div>
+    <div id="section-security"     class="section hidden"></div>
+    <div id="section-settings"     class="section hidden"></div>
+    <div id="section-remedial"     class="section hidden"></div>
+  </main>
+</div>
+
+<div class="modal-overlay hidden" id="modal-add-student">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add New Student</span><button class="modal-close" onclick="closeModal('modal-add-student')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">First Name *</label><input type="text" id="s-fn" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Last Name *</label><input type="text" id="s-ln" class="form-control"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Roll Number *</label><input type="text" id="s-roll" class="form-control" placeholder="2122CS001"></div>
+        <div class="form-group"><label class="form-label">Register Number</label><input type="text" id="s-reg" class="form-control"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Department *</label><select id="s-dept" class="form-control"><option>CSE</option><option>ECE</option><option>EEE</option><option>MECH</option><option>CIVIL</option><option>IT</option></select></div>
+        <div class="form-group"><label class="form-label">Year *</label><select id="s-year" class="form-control"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Section</label><input type="text" id="s-sec" class="form-control" placeholder="A / B / C"></div>
+        <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="s-dob" class="form-control"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Email *</label><input type="email" id="s-email" class="form-control"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Phone</label><input type="tel" id="s-phone" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Parent Phone</label><input type="tel" id="s-pphone" class="form-control"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-student')">Cancel</button>
+      <button class="btn btn-primary" onclick="addStudent()"><i class="fas fa-user-plus"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-bulk-student">
+  <div class="modal modal-lg">
+    <div class="modal-header"><span class="modal-title">Bulk Student Import</span><button class="modal-close" onclick="closeModal('modal-bulk-student')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <button class="btn btn-ghost btn-sm" onclick="downloadStudentTemplate()" style="margin-bottom:14px;"><i class="fas fa-download"></i> Download Template</button>
+      <div class="drop-zone" onclick="document.getElementById('bulk-file').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropStudentFile(event)">
+        <input type="file" id="bulk-file" class="hidden" accept=".csv,.xlsx,.xls" onchange="handleStudentFile(this)">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p style="font-weight:600;color:var(--navy);font-size:16px;">Drop CSV or Excel file here</p>
+        <small style="color:var(--text-3);">Columns: First Name, Last Name, Roll No, Dept, Year, Email, Phone</small>
+      </div>
+      <div id="bulk-preview" class="hidden" style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <strong id="bulk-count" style="color:var(--navy);font-family:'Playfair Display',serif;font-size:18px;"></strong>
+          <button class="btn btn-primary btn-sm" onclick="importBulkStudents()"><i class="fas fa-check"></i> Import All</button>
+        </div>
+        <div class="table-wrap" style="max-height:260px;overflow-y:auto;">
+          <table><thead><tr><th>#</th><th>Name</th><th>Roll No.</th><th>Dept</th><th>Year</th><th>Email</th><th>Status</th></tr></thead>
+          <tbody id="bulk-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-add-result">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add Examination Result</span><button class="modal-close" onclick="closeModal('modal-add-result')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Roll Number *</label><input type="text" id="r-roll" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Subject Name *</label><input type="text" id="r-sub" class="form-control"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Subject Code</label><input type="text" id="r-code" class="form-control" placeholder="CS6301"></div>
+        <div class="form-group"><label class="form-label">Semester *</label><select id="r-sem" class="form-control"><option>Sem 1</option><option>Sem 2</option><option>Sem 3</option><option>Sem 4</option><option>Sem 5</option><option>Sem 6</option><option>Sem 7</option><option>Sem 8</option></select></div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group"><label class="form-label">Internal (max 25)</label><input type="number" id="r-int" class="form-control" min="0" max="25" oninput="calcGradePreview()"></div>
+        <div class="form-group"><label class="form-label">External (max 75)</label><input type="number" id="r-ext" class="form-control" min="0" max="75" oninput="calcGradePreview()"></div>
+        <div class="form-group"><label class="form-label">Grade</label><input type="text" id="r-grade-preview" class="form-control" readonly placeholder="—"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-result')">Cancel</button>
+      <button class="btn btn-primary" onclick="addResult()"><i class="fas fa-plus"></i> Add Result</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-add-faculty">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add Faculty Member</span><button class="modal-close" onclick="closeModal('modal-add-faculty')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">First Name *</label><input type="text" id="f-fn" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Last Name *</label><input type="text" id="f-ln" class="form-control"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Department *</label><select id="f-dept" class="form-control"><option>CSE</option><option>ECE</option><option>EEE</option><option>MECH</option><option>CIVIL</option><option>IT</option></select></div>
+        <div class="form-group"><label class="form-label">Designation</label><select id="f-desig" class="form-control"><option>Professor</option><option>Associate Professor</option><option>Assistant Professor</option><option>HOD</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Email *</label><input type="email" id="f-email" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Phone</label><input type="tel" id="f-phone" class="form-control"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Qualification</label><input type="text" id="f-qual" class="form-control" placeholder="Ph.D / M.E / M.Tech"></div>
+      <div class="form-group"><label class="form-label">Subjects Handling</label><input type="text" id="f-subs" class="form-control" placeholder="Data Structures, DBMS, OS"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-faculty')">Cancel</button>
+      <button class="btn btn-primary" onclick="addFaculty()"><i class="fas fa-plus"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-add-notice">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">New Announcement</span><button class="modal-close" onclick="closeModal('modal-add-notice')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Title *</label><input type="text" id="n-title" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Priority</label><select id="n-pri" class="form-control"><option>Normal</option><option>Important</option><option>Urgent</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Target Audience</label><select id="n-aud" class="form-control"><option>All</option><option>Students</option><option>Faculty</option><option>Parents</option></select></div>
+        <div class="form-group"><label class="form-label">Valid Till</label><input type="date" id="n-till" class="form-control"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Message *</label><textarea id="n-body" class="form-control" rows="4" placeholder="Write announcement…"></textarea></div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:600;"><input type="checkbox" id="n-email" style="accent-color:var(--crimson);width:16px;height:16px;"> Send copy via Email</label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-notice')">Cancel</button>
+      <button class="btn btn-primary" onclick="addNotice()"><i class="fas fa-bullhorn"></i> Publish</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-add-fee">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add Fee Record</span><button class="modal-close" onclick="closeModal('modal-add-fee')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Student Roll No.</label><input type="text" id="fee-roll" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Fee Type</label><select id="fee-type" class="form-control"><option>Tuition Fee</option><option>Hostel Fee</option><option>Bus Fee</option><option>Exam Fee</option><option>Lab Fee</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Amount (₹)</label><input type="number" id="fee-amt" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Due Date</label><input type="date" id="fee-due" class="form-control"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Payment Mode</label><select id="fee-mode" class="form-control"><option>Online</option><option>Challan</option><option>DD</option><option>Cash</option></select></div>
+        <div class="form-group"><label class="form-label">Status</label><select id="fee-status" class="form-control"><option>Pending</option><option>Paid</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-fee')">Cancel</button>
+      <button class="btn btn-primary" onclick="addFee()"><i class="fas fa-plus"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-add-event">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add Calendar Event</span><button class="modal-close" onclick="closeModal('modal-add-event')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Event Title *</label><input type="text" id="ev-title" class="form-control"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Date *</label><input type="date" id="ev-date" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Category</label><select id="ev-cat" class="form-control"><option>Academic</option><option>Exam</option><option>Holiday</option><option>Event</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea id="ev-desc" class="form-control" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-event')">Cancel</button>
+      <button class="btn btn-primary" onclick="addEvent()"><i class="fas fa-plus"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<button id="chatbot-fab" onclick="toggleChat()"><i class="fas fa-robot"></i></button>
+<div id="chatbot-window" class="hidden">
+  <div class="chat-hdr">
+    <div class="chat-avatar">🤖</div>
+    <div style="flex:1"><div style="font-size:15px;font-weight:700">Vidya AI</div><div style="font-size:11.5px;opacity:.8;font-weight:500;">● Online — Academic Assistant</div></div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:rgba(255,255,255,.8);cursor:pointer;font-size:18px;transition:transform 0.2s;"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="chat-msgs" id="chat-msgs"></div>
+  <div class="chat-quick">
+    <span class="chat-quick-btn" onclick="chatQuick('Explain recursion with examples')">Recursion</span>
+    <span class="chat-quick-btn" onclick="chatQuick('DBMS normalization')">Normalization</span>
+    <span class="chat-quick-btn" onclick="chatQuick('OS scheduling algorithms')">OS Scheduling</span>
+    <span class="chat-quick-btn" onclick="chatQuick('Exam preparation tips')">Exam Tips</span>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" class="chat-input" id="chat-inp" placeholder="Ask Vidya AI…" onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="chat-send" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+// ** SECURITY UPDATE ** // The OpenRouter API key has been removed from the frontend!
+// It is now securely stored in your Code.gs backend file.
+const APP_CONFIG = {
+  API_BASE: localStorage.getItem('api_url') || 'https://script.google.com/macros/s/AKfycbzk5Ww0J8CAo6QxhNoO-dgVzgMmv3g7RG0ne6zcq3ErC2sgS_ceZbTMDPYBJIaCpKiphQ/exec',
+  COLLEGE: 'Chennai Institute of Technology & Science',
+  SHORT: 'CITS',
+};
+
+// ── STATE ────────────────────────────────────────────────────
+let S = {
+  user: null, section: 'overview',
+  students: [], faculty: [], results: [], fees: [],
+  notices: [], events: [], emails: [],
+  attachments: [], driveLinks: [], recipients: [],
+  otp: null, otpEmail: '', otpTimer: null,
+  charts: {}, notifications: [],
+  emailStats: { today:0, month:0, total:0 },
+  _bulkStudents: [], _bulkResults: [],
+};
+
+// ── DEMO DATA ────────────────────────────────────────────────
+const DEMO_USERS = {
+  'admin@cits.ac.in':   { password:'Admin@2024',   role:'admin',   name:'Dr. S. Ramachandran', dept:'Administration' },
+  'faculty@cits.ac.in': { password:'Faculty@123',  role:'teacher', name:'Dr. Priya Sundar', dept:'CSE' },
+  'student@cits.ac.in': { password:'Student@123',  role:'student', name:'Karthik Raja M', dept:'CSE', roll:'2122CS047' },
+  'parent@cits.ac.in':  { password:'Parent@123',   role:'parent',  name:'Mr. M. Rajasekar', dept:'' },
+};
+
+const DEMO_STUDENTS = [
+  { id:1, fn:'Karthik',  ln:'Raja M',      roll:'2122CS047', reg:'411621104047', dept:'CSE',  year:'3rd Year', sec:'B', email:'karthik@cits.ac.in',  phone:'9876543210', status:'Active',  att:88 },
+  { id:2, fn:'Priyanka', ln:'Devi S',      roll:'2122CS012', reg:'411621104012', dept:'CSE',  year:'3rd Year', sec:'A', email:'priyanka@cits.ac.in', phone:'9876543211', status:'Active',  att:92 },
+  { id:3, fn:'Arjun',    ln:'Krishnan V',  roll:'2122CS031', reg:'411621104031', dept:'CSE',  year:'3rd Year', sec:'B', email:'arjun@cits.ac.in',    phone:'9876543212', status:'Active',  att:74 },
+  { id:4, fn:'Deepa',    ln:'Lakshmi R',   roll:'2021ECE008',reg:'411621205008', dept:'ECE',  year:'4th Year', sec:'A', email:'deepa@cits.ac.in',    phone:'9876543213', status:'Active',  att:95 },
+  { id:5, fn:'Vijay',    ln:'Kumar T',     roll:'2023MECH021',reg:'411623306021',dept:'MECH', year:'2nd Year', sec:'C', email:'vijay@cits.ac.in',    phone:'9876543214', status:'Active',  att:61 },
+  { id:6, fn:'Anitha',   ln:'Selvam P',    roll:'2122IT019', reg:'411621107019', dept:'IT',   year:'3rd Year', sec:'A', email:'anitha@cits.ac.in',   phone:'9876543215', status:'Active',  att:97 },
+  { id:7, fn:'Mani',     ln:'Kandan S',    roll:'2024CSE001',reg:'411624104001', dept:'CSE',  year:'1st Year', sec:'A', email:'mani@cits.ac.in',     phone:'9876543216', status:'Pending', att:0  },
+  { id:8, fn:'Saranya',  ln:'Murugan G',   roll:'2122EEE042',reg:'411621103042', dept:'EEE',  year:'3rd Year', sec:'B', email:'saranya@cits.ac.in',  phone:'9876543217', status:'Active',  att:83 },
+];
+
+const DEMO_FACULTY = [
+  { id:1, fn:'Priya',    ln:'Sundar',    empid:'CITS-FAC-001', dept:'CSE',  desig:'Associate Professor',qualification:'Ph.D', email:'priya.s@cits.ac.in',  phone:'9876540001', subs:'Data Structures, DBMS', status:'Active', exp:'12 Years' },
+  { id:2, fn:'Ravi',     ln:'Shankar K', empid:'CITS-FAC-002', dept:'ECE',  desig:'Professor',          qualification:'Ph.D', email:'ravi.k@cits.ac.in',   phone:'9876540002', subs:'Digital Electronics, VLSI', status:'Active', exp:'18 Years' },
+  { id:3, fn:'Meenakshi',ln:'Iyer',      empid:'CITS-FAC-003', dept:'MECH', desig:'HOD',                qualification:'M.E',  email:'meenakshi@cits.ac.in',phone:'9876540003', subs:'Thermodynamics', status:'Active', exp:'15 Years' },
+  { id:4, fn:'Suresh',   ln:'Kumar B',   empid:'CITS-FAC-004', dept:'CSE',  desig:'Assistant Professor', qualification:'M.Tech',email:'suresh.b@cits.ac.in', phone:'9876540004', subs:'OS, Computer Networks', status:'Active', exp:'7 Years' },
+];
+
+const DEMO_RESULTS = [
+  { id:1, roll:'2122CS047', name:'Karthik Raja M',   code:'CS6301', sub:'Data Structures', sem:'Sem 3', int:22, ext:68, total:90,  grade:'O',  status:'Pass', dept:'CSE'  },
+  { id:2, roll:'2122CS012', name:'Priyanka Devi S',  code:'CS6302', sub:'DBMS',            sem:'Sem 3', int:24, ext:70, total:94,  grade:'O',  status:'Pass', dept:'CSE'  },
+  { id:3, roll:'2122CS031', name:'Arjun Krishnan V', code:'CS6301', sub:'Data Structures', sem:'Sem 3', int:18, ext:42, total:60,  grade:'B+', status:'Pass', dept:'CSE'  },
+  { id:4, roll:'2021ECE008',name:'Deepa Lakshmi R',  code:'EC6001', sub:'DSP',             sem:'Sem 7', int:25, ext:72, total:97,  grade:'O',  status:'Pass', dept:'ECE'  },
+  { id:5, roll:'2023MECH021',name:'Vijay Kumar T',   code:'ME6301', sub:'Thermodynamics',  sem:'Sem 3', int:14, ext:28, total:42,  grade:'C',  status:'Pass', dept:'MECH' },
+];
+
+const DEMO_FEES = [
+  { id:1, receipt:'CITS-2024-001', student:'Karthik Raja M',  roll:'2122CS047',  type:'Tuition Fee', amount:55000, due:'2024-07-31', paid:'2024-07-28', status:'Paid',    mode:'Online'  },
+  { id:2, receipt:'CITS-2024-002', student:'Priyanka Devi S', roll:'2122CS012',  type:'Tuition Fee', amount:55000, due:'2024-07-31', paid:'2024-08-15', status:'Paid',    mode:'Challan' },
+  { id:3, receipt:'CITS-2024-003', student:'Arjun Krishnan V',roll:'2122CS031',  type:'Hostel Fee',  amount:42000, due:'2024-07-31', paid:null,         status:'Pending', mode:''        },
+  { id:4, receipt:'CITS-2024-004', student:'Vijay Kumar T',   roll:'2023MECH021',type:'Tuition Fee', amount:55000, due:'2024-07-31', paid:null,         status:'Overdue', mode:''        },
+];
+
+const DEMO_NOTICES = [
+  { id:1, title:'End Semester Examination Schedule — November 2025', body:'Examinations commence from 18th November 2025. Download hall tickets from the portal.', pri:'Urgent',    aud:'Students', date:'2025-10-28' },
+  { id:2, title:'Techsym\'25 — National Symposium on AI & ML',       body:'Register for our national symposium on 5th November 2025.', pri:'Important', aud:'All',      date:'2025-10-20' },
+  { id:3, title:'Fee Payment Reminder — Semester II 2025-26',        body:'Pay semester fees before 30th October 2025 to avoid late penalty.', pri:'Normal',    aud:'Students', date:'2025-10-15' },
+];
+
+const DEMO_EVENTS = [
+  { id:1, title:'Semester End Exams', date:'2025-11-18', cat:'Exam',     desc:'UG & PG semester exams begin' },
+  { id:2, title:'Techsym\'25',        date:'2025-11-05', cat:'Event',    desc:'National level technical symposium' },
+  { id:3, title:'Diwali Holiday',     date:'2025-11-01', cat:'Holiday',  desc:'Institute holiday' },
+  { id:4, title:'Internal Assessment II', date:'2025-10-25', cat:'Academic', desc:'Second internal for all depts' },
+];
+
+const TT_DATA = {
+  'CSE-3B': {
+    '9:00-9:50':   {Mon:'Data Structures\nDr. Priya S',Tue:'DBMS\nDr. Suresh B',  Wed:'OS\nDr. Suresh B',     Thu:'Networks\nDr. Priya S', Fri:'Data Structures\nDr. Priya S',Sat:'Sports'},
+    '9:50-10:40':  {Mon:'DBMS\nDr. Suresh B',          Tue:'DS Lab\nDr. Priya S', Wed:'DBMS\nDr. Suresh B',   Thu:'OS Lab\nDr. Suresh B',  Fri:'DBMS\nDr. Suresh B',            Sat:'NCC/NSS'},
+    '10:50-11:40': {Mon:'OS\nDr. Suresh B',            Tue:'DS Lab\nDr. Priya S', Wed:'Networks\nDr. Priya S',Thu:'OS Lab\nDr. Suresh B',  Fri:'OS\nDr. Suresh B',              Sat:'Library'},
+    '11:40-12:30': {Mon:'Networks\nDr. Priya S',       Tue:'Free Period',         Wed:'Tutorial\nAll Staff',  Thu:'Tutorial\nAll Staff',   Fri:'Networks\nDr. Priya S',         Sat:''},
+    '1:15-2:05':   {Mon:'Algorithms\nHOD',             Tue:'Algorithms\nHOD',     Wed:'Algo Lab\nHOD',        Thu:'Seminar',               Fri:'Algorithms\nHOD',               Sat:''},
+    '2:05-2:55':   {Mon:'Elective I\nDr. Priya S',     Tue:'Elective I\nDr. Priya S',Wed:'Algo Lab\nHOD',     Thu:'Project Work',          Fri:'Elective I\nDr. Priya S',       Sat:''},
+  }
+};
+
+// ── NAV MENUS ────────────────────────────────────────────────
+const NAV = {
+  admin: [
+    {s:'overview',   i:'fa-th-large',            l:'Dashboard'},
+    {sep:'ACADEMIC'},
+    {s:'students',   i:'fa-users',               l:'Students',            b:()=>S.students.filter(x=>x.status==='Pending').length},
+    {s:'faculty',    i:'fa-chalkboard-teacher',  l:'Faculty'},
+    {s:'departments',i:'fa-sitemap',             l:'Departments'},
+    {s:'timetable',  i:'fa-calendar-alt',        l:'Timetable'},
+    {sep:'EXAMINATIONS'},
+    {s:'attendance', i:'fa-clipboard-check',     l:'Attendance'},
+    {s:'results',    i:'fa-chart-line',          l:'Results & Analytics'},
+    {sep:'FINANCE & COMMS'},
+    {s:'fees',       i:'fa-rupee-sign',          l:'Fee Management'},
+    {s:'email',      i:'fa-envelope',            l:'Bulk Email'},
+    {s:'announcements',i:'fa-bullhorn',          l:'Announcements'},
+    {sep:'SYSTEM'},
+    {s:'approvals',  i:'fa-user-check',          l:'Approvals',          b:()=>S.students.filter(x=>x.status==='Pending').length},
+    {s:'calendar',   i:'fa-calendar',            l:'Academic Calendar'},
+    {s:'security',   i:'fa-shield-alt',          l:'Security Logs'},
+    {s:'settings',   i:'fa-cog',                 l:'Settings'},
+    {s:'remedial',   i:'fa-robot',               l:'Vidya AI'},
+  ],
+  teacher: [
+    {s:'overview',     i:'fa-th-large',          l:'Dashboard'},
+    {s:'students',     i:'fa-users',             l:'My Students'},
+    {s:'attendance',   i:'fa-clipboard-check',   l:'Attendance'},
+    {s:'results',      i:'fa-chart-line',        l:'Results'},
+    {s:'announcements',i:'fa-bullhorn',          l:'Announcements'},
+    {s:'email',        i:'fa-envelope',          l:'Email Students'},
+    {s:'timetable',    i:'fa-calendar-alt',      l:'Timetable'},
+    {s:'settings',     i:'fa-cog',               l:'Settings'},
+    {s:'remedial',     i:'fa-robot',             l:'Vidya AI'},
+  ],
+  student: [
+    {s:'overview',     i:'fa-th-large',          l:'My Dashboard'},
+    {s:'attendance',   i:'fa-clipboard-check',   l:'My Attendance'},
+    {s:'results',      i:'fa-chart-line',        l:'My Results'},
+    {s:'fees',         i:'fa-rupee-sign',        l:'Fee Status'},
+    {s:'timetable',    i:'fa-calendar-alt',      l:'Timetable'},
+    {s:'announcements',i:'fa-bullhorn',          l:'Notices'},
+    {s:'calendar',     i:'fa-calendar',          l:'Calendar'},
+    {s:'settings',     i:'fa-cog',               l:'Settings'},
+    {s:'remedial',     i:'fa-robot',             l:'Vidya AI'},
+  ],
+  parent: [
+    {s:'overview',     i:'fa-th-large',          l:'Overview'},
+    {s:'attendance',   i:'fa-clipboard-check',   l:"Ward's Attendance"},
+    {s:'results',      i:'fa-chart-line',        l:"Ward's Results"},
+    {s:'fees',         i:'fa-rupee-sign',        l:'Fee Status'},
+    {s:'announcements',i:'fa-bullhorn',          l:'Notices'},
+    {s:'calendar',     i:'fa-calendar',          l:'Calendar'},
+    {s:'settings',     i:'fa-cog',               l:'Settings'},
+  ],
+};
+
+// ══ GOOGLE APPS SCRIPT API CALL ════════════════════════════
+async function apiCall(action, data={}) {
+  try {
+    const url = APP_CONFIG.API_BASE;
+    const res = await fetch(url + '?action=' + action, {
+      method: 'POST',
+      headers: {'Content-Type':'text/plain;charset=utf-8'}, // Safe CORS setting
+      body: JSON.stringify({action, ...data})
+    });
+    return await res.json();
+  } catch(e) {
+    console.warn('API call failed (offline/demo mode):', e.message);
+    return { success: false, error: e.message };
+  }
+}
+
+// ══ LOGIN / AUTH ════════════════════════════════════════════
+let selectedRole = 'admin';
+function selectRole(el, role) {
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); selectedRole = role;
+}
+function switchFtab(tab, btn) {
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ftab-signin').classList.toggle('hidden', tab!=='signin');
+  document.getElementById('ftab-register').classList.toggle('hidden', tab!=='register');
+}
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  const hide = inp.type==='password';
+  inp.type = hide ? 'text' : 'password';
+  btn.innerHTML = hide ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+}
+function fillDemo(email, pw) {
+  document.getElementById('login-email').value = email;
+  document.getElementById('login-pw').value = pw;
+  const role = DEMO_USERS[email]?.role || 'admin';
+  document.querySelectorAll('.role-card').forEach(c=>{
+    c.classList.remove('active');
+    if(c.dataset.role===role) c.classList.add('active');
+  });
+  selectedRole = role;
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+  if(!email||!pw) { toast('Please enter email and password','error'); return; }
+
+  // Try demo first, then real API
+  const demo = DEMO_USERS[email];
+  if(demo && demo.password===pw) {
+    S.user = {...demo, email};
+    localStorage.setItem('cits_session', JSON.stringify(S.user));
+    initApp(); return;
+  }
+
+  // Real API login
+  toast('Authenticating...', 'info');
+  const result = await apiCall('login', {email, password:pw});
+  if(result.success) {
+    S.user = {...result.user, _token: result.token};
+    localStorage.setItem('cits_session', JSON.stringify(S.user));
+    initApp();
+  } else {
+    toast(result.error || 'Invalid credentials','error');
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('cits_session');
+  S.user = null;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login-page').classList.remove('hidden');
+  toast('Logged out successfully','info');
+}
+
+function doRegister() {
+  const name = document.getElementById('r_fullName').value.trim();
+  const email= document.getElementById('r_email').value.trim();
+  if(!name||!email) { toast('Please fill required fields','error'); return; }
+  toast('Registration submitted! Awaiting admin approval.','info');
+  setTimeout(()=>{ switchFtab('signin', document.querySelector('.ftab')); }, 1500);
+}
+
+// ── FORGOT PASSWORD ──────────────────────────────────────────
+function showForgot() {
+  document.getElementById('login-page').classList.add('hidden');
+  document.getElementById('forgot-page').classList.remove('hidden');
+}
+function showLogin() {
+  document.getElementById('forgot-page').classList.add('hidden');
+  document.getElementById('login-page').classList.remove('hidden');
+}
+function sendOTP() {
+  const email = document.getElementById('fp-email').value.trim();
+  if(!email) { toast('Enter email address','error'); return; }
+  if(!DEMO_USERS[email]) { toast('Email not registered','error'); return; }
+  S.otp = String(Math.floor(100000+Math.random()*900000));
+  S.otpEmail = email;
+  document.getElementById('fp-email-show').textContent = email;
+  document.getElementById('fp-s1').classList.add('hidden');
+  document.getElementById('fp-s2').classList.remove('hidden');
+  ['sd1','sl1','sd2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(id==='sd1') el.className='step-dot done';
+    else if(id==='sl1') el.className='step-line done';
+    else el.className='step-dot active';
+  });
+  startOtpTimer(600);
+  toast(`OTP sent (Demo: ${S.otp})`,'success');
+}
+function startOtpTimer(sec) {
+  clearInterval(S.otpTimer);
+  S.otpTimer = setInterval(()=>{
+    sec--;
+    const m = String(Math.floor(sec/60)).padStart(2,'0');
+    const s2= String(sec%60).padStart(2,'0');
+    const el = document.getElementById('otp-timer');
+    if(el) el.textContent = `${m}:${s2}`;
+    if(sec<=0) { clearInterval(S.otpTimer); toast('OTP expired','warning'); }
+  }, 1000);
+}
+function otpNext(inp, idx) {
+  inp.value = inp.value.replace(/\D/g,'');
+  if(inp.value.length===1) {
+    const inputs = document.querySelectorAll('.otp-digit');
+    if(idx<5) inputs[idx+1].focus();
+    if(idx===5) verifyOTP();
+  }
+}
+function otpBack(inp, idx) {
+  if(event.key==='Backspace'&&inp.value===''&&idx>0)
+    document.querySelectorAll('.otp-digit')[idx-1].focus();
+}
+function verifyOTP() {
+  const code = Array.from(document.querySelectorAll('.otp-digit')).map(i=>i.value).join('');
+  if(code.length!==6) { toast('Enter complete OTP','error'); return; }
+  if(code!==S.otp) { toast('Invalid OTP','error'); return; }
+  clearInterval(S.otpTimer);
+  document.getElementById('fp-s2').classList.add('hidden');
+  document.getElementById('fp-s3').classList.remove('hidden');
+  ['sd2','sl2','sd3'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(id==='sd2') el.className='step-dot done';
+    else if(id==='sl2') el.className='step-line done';
+    else el.className='step-dot active';
+  });
+  toast('OTP verified!','success');
+}
+function resendOTP() { S.otp=String(Math.floor(100000+Math.random()*900000)); document.querySelectorAll('.otp-digit').forEach(i=>i.value=''); startOtpTimer(600); toast(`New OTP sent (Demo: ${S.otp})`,'info'); }
+function resetPassword() {
+  const pw1 = document.getElementById('fp-pw1').value;
+  const pw2 = document.getElementById('fp-pw2').value;
+  if(!pw1||pw1.length<8) { toast('Min 8 characters','error'); return; }
+  if(pw1!==pw2) { toast('Passwords do not match','error'); return; }
+  if(DEMO_USERS[S.otpEmail]) DEMO_USERS[S.otpEmail].password=pw1;
+  toast('Password reset successfully!','success');
+  setTimeout(showLogin,1500);
+}
+
+// Registration steps
+let regStep = 1;
+function nextRegStep(from) {
+  const fields = {1:['r_regNo','r_fullName','r_email','r_mobile'], 2:['r_dept'], 3:['r_pw']};
+  const required = fields[from]||[];
+  for(const f of required) { if(document.getElementById(f)&&!document.getElementById(f).value.trim()) { toast('Please fill required fields','error'); return; } }
+  document.getElementById(`reg-s${from}`).classList.add('hidden');
+  document.getElementById(`reg-s${from+1}`).classList.remove('hidden');
+  regStep = from+1;
+  document.querySelectorAll('.reg-step').forEach((el,i)=>el.classList.toggle('active',i<regStep));
+}
+function prevRegStep(from) {
+  document.getElementById(`reg-s${from}`).classList.add('hidden');
+  document.getElementById(`reg-s${from-1}`).classList.remove('hidden');
+  regStep = from-1;
+  document.querySelectorAll('.reg-step').forEach((el,i)=>el.classList.toggle('active',i<regStep));
+}
+
+// ══ APP INIT ════════════════════════════════════════════════
+function initApp() {
+  document.getElementById('login-page').classList.add('hidden');
+  document.getElementById('forgot-page').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  S.students = [...DEMO_STUDENTS];
+  S.faculty  = [...DEMO_FACULTY];
+  S.results  = [...DEMO_RESULTS];
+  S.fees     = [...DEMO_FEES];
+  S.notices  = [...DEMO_NOTICES];
+  S.events   = [...DEMO_EVENTS];
+  S.emailStats = {today:4, month:147, total:2893};
+  buildSidebar();
+  updateSidebarUser();
+  startClock();
+  buildNotifications();
+  showSection('overview');
+  toast(`Welcome back, ${S.user.name.split(' ')[0]}! 👋`, 'success');
+}
+
+function buildSidebar() {
+  const nav = document.getElementById('sidebar-nav');
+  nav.innerHTML = '';
+  const items = NAV[S.user.role] || NAV.admin;
+  items.forEach(item => {
+    if(item.sep) { nav.innerHTML += `<div class="nav-group-label">${item.sep}</div>`; return; }
+    const bv = item.b ? item.b() : 0;
+    const badge = bv>0 ? `<span class="nav-badge">${bv}</span>` : '';
+    nav.innerHTML += `<div class="nav-link" onclick="showSection('${item.s}')" data-sec="${item.s}"><i class="fas ${item.i}"></i>${item.l}${badge}</div>`;
+  });
+}
+function updateSidebarUser() {
+  const u = S.user;
+  document.getElementById('sb-avatar').textContent = u.name.charAt(0);
+  document.getElementById('sb-username').textContent = u.name;
+  document.getElementById('sb-role').textContent = u.role.charAt(0).toUpperCase()+u.role.slice(1);
+}
+function startClock() {
+  const tick = ()=>{ const el=document.getElementById('topbar-clock'); if(el) el.textContent=new Date().toLocaleTimeString('en-IN',{hour12:false}); };
+  tick(); setInterval(tick,1000);
+}
+
+function showSection(sec) {
+  if(!sec) return;
+  document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
+  const el = document.getElementById(`section-${sec}`);
+  if(el) el.classList.remove('hidden');
+  document.querySelectorAll('.nav-link').forEach(n=>n.classList.toggle('active',n.dataset.sec===sec));
+  const titles = {overview:'Dashboard',students:'Students',faculty:'Faculty',attendance:'Attendance',results:'Results & Analytics',fees:'Fee Management',email:'Bulk Email',announcements:'Announcements',timetable:'Timetable',departments:'Departments',calendar:'Academic Calendar',approvals:'Pending Approvals',security:'Security Logs',settings:'Settings',remedial:'Vidya AI'};
+  document.getElementById('topbar-title').textContent = titles[sec]||sec;
+  S.section = sec;
+  const renders = {overview:renderOverview,students:renderStudents,faculty:renderFaculty,results:renderResults,fees:renderFees,announcements:renderNotices,departments:renderDepts,calendar:renderCalendar,timetable:()=>renderTT('CSE-3B'),approvals:renderApprovals,security:renderSecurity,attendance:renderAttendance,remedial:renderRemedial,email:initEmail,settings:renderSettings};
+  if(renders[sec]) renders[sec]();
+}
+
+// ══ OVERVIEW ════════════════════════════════════════════════
+function renderOverview() {
+  const el = document.getElementById('section-overview');
+  const active = S.students.filter(s=>s.status==='Active').length;
+  const pending = S.students.filter(s=>s.status==='Pending').length;
+  const avgAtt = Math.round(S.students.filter(s=>s.att>0).reduce((a,s)=>a+s.att,0)/active);
+  el.innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-card c-red"><div class="stat-card-accent"></div><div class="stat-icon-wrap"><i class="fas fa-users"></i></div><div class="stat-val">${active}</div><div class="stat-lbl">Active Students</div><div class="stat-delta up"><i class="fas fa-arrow-up"></i>+48 this semester</div></div>
+      <div class="stat-card c-gold"><div class="stat-card-accent"></div><div class="stat-icon-wrap"><i class="fas fa-chalkboard-teacher"></i></div><div class="stat-val">${S.faculty.length}</div><div class="stat-lbl">Faculty Members</div><div class="stat-delta up"><i class="fas fa-arrow-up"></i>+3 this month</div></div>
+      <div class="stat-card c-teal"><div class="stat-card-accent"></div><div class="stat-icon-wrap"><i class="fas fa-clipboard-check"></i></div><div class="stat-val">${avgAtt}%</div><div class="stat-lbl">Avg Attendance</div><div class="stat-delta ${avgAtt>=75?'up':'dn'}"><i class="fas fa-arrow-${avgAtt>=75?'up':'down'}"></i>${avgAtt>=75?'Good standing':'Below threshold'}</div></div>
+      <div class="stat-card c-sage"><div class="stat-card-accent"></div><div class="stat-icon-wrap"><i class="fas fa-rupee-sign"></i></div><div class="stat-val">₹2.4L</div><div class="stat-lbl">Fees Collected</div><div class="stat-delta up"><i class="fas fa-arrow-up"></i>78% collection rate</div></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card"><div class="card-header"><span class="card-title">Department Enrollment</span><span class="badge badge-navy" style="color:var(--gold);">This Semester</span></div><canvas id="deptChart" height="230"></canvas></div>
+      <div class="chart-card"><div class="card-header"><span class="card-title">Grade Distribution</span><span class="badge badge-info" style="background:rgba(14,116,144,0.2);border:none;color:var(--teal);">Latest Results</span></div><canvas id="gradeChart" height="230"></canvas></div>
+    </div>
+    <div class="chart-grid" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="card"><div class="card-header" style="margin-bottom:14px;"><span class="card-title" style="font-size:16px;">Quick Actions</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button class="btn btn-primary btn-sm" onclick="showSection('students');openModal('modal-add-student')"><i class="fas fa-user-plus"></i> Add Student</button>
+          <button class="btn btn-teal btn-sm" onclick="showSection('results');"><i class="fas fa-upload"></i> Upload Results</button>
+          <button class="btn btn-gold btn-sm" onclick="showSection('email')"><i class="fas fa-envelope"></i> Send Email</button>
+          <button class="btn btn-ghost btn-sm" onclick="showSection('announcements');openModal('modal-add-notice')"><i class="fas fa-bullhorn"></i> Announce</button>
+        </div>
+        ${pending>0?`<div style="margin-top:14px;padding:10px 14px;background:rgba(155,28,28,.1);backdrop-filter:blur(5px);border-radius:8px;border:1px solid rgba(155,28,28,.2);"><span style="font-size:12.5px;color:var(--crimson);font-weight:600;"><i class="fas fa-clock"></i> ${pending} pending approval${pending>1?'s':''}</span></div>`:''}
+      </div>
+      <div class="card"><div class="card-header" style="margin-bottom:14px;"><span class="card-title" style="font-size:16px;">Recent Activity</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          ${[
+            {i:'fa-user-plus',c:'teal',t:'Mani Kandan registered',d:'2h ago'},
+            {i:'fa-envelope',c:'gold',t:'Bulk email · 340 students',d:'5h ago'},
+            {i:'fa-chart-bar',c:'sage',t:'Results published · Sem 3',d:'1d ago'},
+            {i:'fa-rupee-sign',c:'red',t:'Fee reminders sent · 12',d:'2d ago'},
+          ].map(a=>`<div style="display:flex;align-items:center;gap:10px;">
+            <div class="stat-icon-wrap c-${a.c}" style="width:30px;height:30px;font-size:12px;flex-shrink:0;margin:0;border-radius:8px;"><i class="fas ${a.i}"></i></div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text-1);">${a.t}</div><div style="font-size:11px;color:var(--text-3);">${a.d}</div></div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="card"><div class="card-header" style="margin-bottom:14px;"><span class="card-title" style="font-size:16px;">Upcoming Events</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          ${S.events.map(e=>`<div style="display:flex;align-items:center;gap:12px;">
+            <div style="text-align:center;flex-shrink:0;width:40px;background:rgba(255,255,255,0.4);border-radius:6px;padding:4px;border:1px solid rgba(255,255,255,0.6);">
+              <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--crimson);line-height:1;">${new Date(e.date).getDate()}</div>
+              <div style="font-size:9.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;font-weight:600;">${new Date(e.date).toLocaleString('default',{month:'short'})}</div>
+            </div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--navy);">${e.title}</div><span class="badge badge-info" style="font-size:10px;padding:2px 7px;background:rgba(30,64,175,0.1);border:none;">${e.cat}</span></div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  setTimeout(()=>{
+    mkChart('deptChart','doughnut',['CSE','ECE','EEE','MECH','CIVIL','IT'],[{data:[320,280,210,190,160,130],backgroundColor:['#9b1c1c','#d4a853','#0e7490','#166534','#1a2744','#c53030'],borderWidth:2,borderColor:'transparent'}],{plugins:{legend:{position:'right',labels:{font:{size:11.5},boxWidth:12}}}});
+    mkChart('gradeChart','bar',['O (90+)','A+ (80-89)','A (70-79)','B+ (60-69)','B (50-59)','C (40-49)','F (<40)'],[{label:'Students',data:[18,24,32,28,18,8,4],backgroundColor:['rgba(22,101,52,0.8)','rgba(14,116,144,0.8)','rgba(26,39,68,0.8)','rgba(212,168,83,0.8)','rgba(155,28,28,0.8)','rgba(197,48,48,0.8)','rgba(239,68,68,0.8)'],borderRadius:5}],{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.04)'}},x:{grid:{display:false},ticks:{font:{size:10.5}}}}});
+  },80);
+}
+
+// ══ STUDENTS ════════════════════════════════════════════════
+function renderStudents(list) {
+  list = list || S.students;
+  const sec = document.getElementById('section-students');
+  sec.innerHTML = `
+    <div class="toolbar">
+      <div class="search-wrap"><i class="fas fa-search"></i><input type="text" class="form-control search-input" id="s-search" placeholder="Search students…" oninput="filterStudents(this.value)"></div>
+      <select class="form-control" style="width:150px" id="s-dept-f" onchange="filterStudents(document.getElementById('s-search').value)">
+        <option value="">All Departments</option>
+        <option>CSE</option><option>ECE</option><option>EEE</option><option>MECH</option><option>CIVIL</option><option>IT</option>
+      </select>
+      <select class="form-control" style="width:130px" id="s-year-f"><option value="">All Years</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select>
+      <button class="btn btn-primary" onclick="openModal('modal-add-student')"><i class="fas fa-plus"></i> Add Student</button>
+      <button class="btn btn-teal" onclick="openModal('modal-bulk-student')"><i class="fas fa-upload"></i> Import</button>
+      <button class="btn btn-ghost" onclick="exportStudents()"><i class="fas fa-download"></i> Export</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:20px 22px 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,0.06);padding-bottom:16px;margin-bottom:0;">
+        <span class="card-title">Student Directory</span>
+        <span class="badge badge-navy" id="s-count">${list.length} students</span>
+      </div>
+      <div class="table-wrap" style="border:none;border-radius:0;">
+        <table id="s-table">
+          <thead><tr><th>Roll No.</th><th>Name</th><th>Department</th><th>Year</th><th>Contact</th><th>Status</th><th>Attendance</th><th>Actions</th></tr></thead>
+          <tbody id="s-tbody"></tbody>
+        </table>
+      </div>
+    </div>`;
+  renderStudentRows(list);
+}
+
+function renderStudentRows(list) {
+  const tbody = document.getElementById('s-tbody');
+  if(!tbody) return;
+  document.getElementById('s-count').textContent = `${list.length} students`;
+  tbody.innerHTML = list.map(s=>`<tr>
+    <td><span class="font-mono" style="font-size:12px;color:var(--text-3);">${s.roll}</span></td>
+    <td><strong style="color:var(--navy);">${s.fn} ${s.ln}</strong></td>
+    <td><span class="badge badge-info" style="border:none;">${s.dept}</span></td>
+    <td style="color:var(--text-2);">${s.year}</td>
+    <td style="font-size:12.5px;">${s.email}<br><span style="color:var(--text-4);">${s.phone}</span></td>
+    <td><span class="badge badge-${s.status==='Active'?'success':s.status==='Pending'?'warning':'danger'}" style="border:none;">${s.status}</span></td>
+    <td style="min-width:110px;">
+      <div class="progress" style="margin-bottom:3px;background:rgba(0,0,0,0.05);"><div class="progress-fill ${s.att>=75?'green':s.att>=50?'gold':'red'}" style="width:${s.att}%;"></div></div>
+      <span style="font-size:11px;color:var(--text-3);font-weight:600;">${s.att}%</span>
+    </td>
+    <td>
+      <div class="flex gap-6">
+        <button class="btn btn-icon btn-ghost" onclick="viewStudent(${s.id})" title="View"><i class="fas fa-eye" style="font-size:13px;"></i></button>
+        <button class="btn btn-icon btn-outline" onclick="editStudent(${s.id})" title="Edit"><i class="fas fa-edit" style="font-size:13px;"></i></button>
+        <button class="btn btn-icon btn-danger" onclick="delStudent(${s.id})" title="Delete"><i class="fas fa-trash" style="font-size:13px;"></i></button>
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+function filterStudents(q) {
+  const dept = document.getElementById('s-dept-f')?.value||'';
+  const filtered = S.students.filter(s=>{
+    const match = !q || `${s.fn} ${s.ln} ${s.roll} ${s.email}`.toLowerCase().includes(q.toLowerCase());
+    const dMatch = !dept || s.dept===dept;
+    return match && dMatch;
+  });
+  renderStudentRows(filtered);
+}
+function addStudent() {
+  const fn=g('s-fn').value.trim(), ln=g('s-ln').value.trim(), roll=g('s-roll').value.trim(), email=g('s-email').value.trim();
+  if(!fn||!ln||!roll||!email) { toast('Fill required fields','error'); return; }
+  S.students.unshift({id:Date.now(),fn,ln,roll,reg:g('s-reg').value,dept:g('s-dept').value,year:g('s-year').value,sec:g('s-sec').value,email,phone:g('s-phone').value,status:'Active',att:0});
+  closeModal('modal-add-student'); renderStudents();
+  toast(`${fn} ${ln} added successfully`,'success');
+}
+function delStudent(id) { if(!confirm('Remove this student?')) return; S.students=S.students.filter(s=>s.id!==id); renderStudents(); toast('Student removed','info'); }
+function viewStudent(id) { toast('Viewing student profile…','info'); }
+function editStudent(id) { toast('Edit student (integrate with API)','info'); }
+function exportStudents() {
+  const csv=['Roll No,Name,Dept,Year,Email,Phone,Attendance,Status'].concat(S.students.map(s=>`${s.roll},${s.fn} ${s.ln},${s.dept},${s.year},${s.email},${s.phone},${s.att}%,${s.status}`)).join('\n');
+  dlFile('students_export.csv',csv,'text/csv'); toast('Exported','success');
+}
+function downloadStudentTemplate() { dlFile('student_template.csv','First Name,Last Name,Roll No,Reg No,Department,Year,Section,Email,Phone\nKarthik,Raja,2122CS001,411621104001,CSE,3rd Year,A,student@cits.ac.in,9876543210','text/csv'); }
+function handleStudentFile(inp) {
+  const file=inp.files[0]; if(!file) return;
+  parseFile(file, data=>{
+    S._bulkStudents=data;
+    g('bulk-count').textContent=`${data.length} students ready to import`;
+    g('bulk-tbody').innerHTML=data.map((r,i)=>`<tr><td>${i+1}</td><td>${r['First Name']||''} ${r['Last Name']||''}</td><td>${r['Roll No']||''}</td><td>${r['Department']||''}</td><td>${r['Year']||''}</td><td>${r['Email']||''}</td><td><span class="badge badge-success">Ready</span></td></tr>`).join('');
+    g('bulk-preview').classList.remove('hidden');
+  });
+}
+function importBulkStudents() {
+  let added=0;
+  S._bulkStudents.forEach(r=>{ S.students.push({id:Date.now()+added,fn:r['First Name']||'',ln:r['Last Name']||'',roll:r['Roll No']||'',reg:'',dept:r['Department']||'CSE',year:r['Year']||'1st Year',sec:r['Section']||'A',email:r['Email']||'',phone:r['Phone']||'',status:'Active',att:0}); added++; });
+  closeModal('modal-bulk-student'); renderStudents(); toast(`${added} students imported`,'success');
+}
+function dropStudentFile(e) { e.preventDefault(); e.target.classList.remove('dragover'); handleStudentFile({files:e.dataTransfer.files}); }
+
+// ══ FACULTY ═════════════════════════════════════════════════
+function renderFaculty() {
+  const sec = document.getElementById('section-faculty');
+  sec.innerHTML = `
+    <div class="toolbar">
+      <div class="search-wrap"><i class="fas fa-search"></i><input type="text" class="form-control search-input" placeholder="Search faculty…" oninput="filterFaculty(this.value)" id="f-search"></div>
+      <select class="form-control" style="width:150px"><option value="">All Departments</option><option>CSE</option><option>ECE</option><option>MECH</option><option>EEE</option></select>
+      <button class="btn btn-primary" onclick="openModal('modal-add-faculty')"><i class="fas fa-plus"></i> Add Faculty</button>
+      <button class="btn btn-ghost" onclick="exportFaculty()"><i class="fas fa-download"></i> Export</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:20px 22px 16px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title">Faculty Directory</span></div>
+      <div class="table-wrap" style="border:none;border-radius:0;">
+        <table><thead><tr><th>Emp ID</th><th>Name</th><th>Department</th><th>Designation</th><th>Qualification</th><th>Subjects</th><th>Experience</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="f-tbody"></tbody></table>
+      </div>
+    </div>`;
+  renderFacultyRows(S.faculty);
+}
+function renderFacultyRows(list) {
+  const tbody = document.getElementById('f-tbody'); if(!tbody) return;
+  tbody.innerHTML=list.map(f=>`<tr>
+    <td><span class="font-mono" style="font-size:12px;color:var(--text-3);">${f.empid}</span></td>
+    <td><strong style="color:var(--navy);">${f.fn} ${f.ln}</strong><br><span style="font-size:11.5px;color:var(--text-3);">${f.qualification}</span></td>
+    <td><span class="badge badge-info" style="border:none;">${f.dept}</span></td>
+    <td style="font-size:13px;font-weight:500;">${f.desig}</td>
+    <td style="font-size:13px;">${f.qualification}</td>
+    <td style="font-size:12.5px;max-width:160px;color:var(--text-2);">${f.subs}</td>
+    <td style="font-size:13px;">${f.exp}</td>
+    <td><span class="badge badge-success" style="border:none;">${f.status}</span></td>
+    <td><div class="flex gap-6">
+      <button class="btn btn-icon btn-ghost"><i class="fas fa-eye" style="font-size:13px;"></i></button>
+      <button class="btn btn-icon btn-outline"><i class="fas fa-edit" style="font-size:13px;"></i></button>
+      <button class="btn btn-icon btn-danger" onclick="delFaculty(${f.id})"><i class="fas fa-trash" style="font-size:13px;"></i></button>
+    </div></td>
+  </tr>`).join('');
+}
+function filterFaculty(q) { renderFacultyRows(S.faculty.filter(f=>!q||`${f.fn} ${f.ln} ${f.dept}`.toLowerCase().includes(q.toLowerCase()))); }
+function addFaculty() {
+  const fn=g('f-fn').value.trim(),ln=g('f-ln').value.trim(),email=g('f-email').value.trim();
+  if(!fn||!ln||!email){toast('Fill required fields','error');return;}
+  S.faculty.push({id:Date.now(),fn,ln,empid:`CITS-FAC-${String(S.faculty.length+1).padStart(3,'0')}`,dept:g('f-dept').value,desig:g('f-desig').value,qualification:g('f-qual').value,email,phone:g('f-phone').value,subs:g('f-subs').value,status:'Active',exp:'New'});
+  closeModal('modal-add-faculty');renderFaculty();toast('Faculty added','success');
+}
+function delFaculty(id){if(!confirm('Remove faculty?'))return;S.faculty=S.faculty.filter(f=>f.id!==id);renderFaculty();toast('Faculty removed','info');}
+function exportFaculty(){dlFile('faculty.csv',['EmpID,Name,Dept,Designation,Email,Phone'].concat(S.faculty.map(f=>`${f.empid},${f.fn} ${f.ln},${f.dept},${f.desig},${f.email},${f.phone}`)).join('\n'),'text/csv');}
+
+// ══ ATTENDANCE ════════════════════════════════════════════
+function renderAttendance() {
+  const sec = document.getElementById('section-attendance');
+  const today = new Date().toISOString().split('T')[0];
+  sec.innerHTML = `
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'att-mark')">Mark Attendance</button>
+      <button class="tab-btn" onclick="switchTab(this,'att-report')">Report</button>
+      <button class="tab-btn" onclick="switchTab(this,'att-charts')">Analytics</button>
+    </div>
+    <div class="tab-pane active" id="tab-att-mark">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:20px 22px 16px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
+          <span class="card-title">Mark Attendance</span>
+          <div class="flex gap-8">
+            <select class="form-control" style="width:160px"><option>CSE — III B</option><option>ECE — II A</option><option>MECH — II C</option></select>
+            <select class="form-control" style="width:180px"><option>Data Structures (CS6301)</option><option>DBMS (CS6302)</option></select>
+            <input type="date" class="form-control" style="width:160px" value="${today}">
+            <button class="btn btn-primary btn-sm" onclick="toast('Attendance Saved!','success')"><i class="fas fa-save"></i> Save All</button>
+          </div>
+        </div>
+        <div class="table-wrap" style="border:none;border-radius:0;"><table>
+          <thead><tr><th>Roll No.</th><th>Student Name</th><th>Status</th><th>Remark</th></tr></thead>
+          <tbody>${S.students.slice(0,6).map(s=>`<tr>
+            <td><span class="font-mono" style="font-size:12px;">${s.roll}</span></td>
+            <td><strong style="color:var(--navy);">${s.fn} ${s.ln}</strong></td>
+            <td><div class="flex gap-12">
+              <label style="cursor:pointer;display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;"><input type="radio" name="att_${s.id}" value="P" checked style="accent-color:var(--sage-l);width:16px;height:16px;"> <span style="color:var(--sage);">Present</span></label>
+              <label style="cursor:pointer;display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;"><input type="radio" name="att_${s.id}" value="A" style="accent-color:var(--crimson);width:16px;height:16px;"> <span style="color:var(--crimson);">Absent</span></label>
+              <label style="cursor:pointer;display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;"><input type="radio" name="att_${s.id}" value="OD" style="accent-color:var(--teal);width:16px;height:16px;"> <span style="color:var(--teal);">OD</span></label>
+            </div></td>
+            <td><input type="text" class="form-control" style="padding:8px 12px;font-size:12px;" placeholder="Optional remark"></td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tab-att-report">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:20px 22px 16px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title">Attendance Report</span></div>
+        <div class="table-wrap" style="border:none;border-radius:0;"><table>
+          <thead><tr><th>Student</th><th>Roll No.</th><th>Subject</th><th>Present</th><th>Absent</th><th>Total</th><th>%</th><th>Status</th></tr></thead>
+          <tbody>${S.students.map(s=>`<tr>
+            <td><strong style="color:var(--navy);">${s.fn} ${s.ln}</strong></td>
+            <td><span class="font-mono" style="font-size:12px;">${s.roll}</span></td>
+            <td style="color:var(--text-2);font-weight:500;">All Subjects</td>
+            <td>${s.att>0?Math.round(s.att*0.65):0}</td>
+            <td>${s.att>0?Math.round((100-s.att)*0.35):0}</td>
+            <td>${s.att>0?80:0}</td>
+            <td style="color:var(--navy);"><strong>${s.att}%</strong></td>
+            <td><span class="badge badge-${s.att>=75?'success':s.att>=50?'warning':'danger'}" style="border:none;">${s.att>=75?'Good':s.att>=50?'Low':'Critical'}</span></td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tab-att-charts">
+      <div class="chart-grid">
+        <div class="chart-card"><div class="card-header"><span class="card-title">Dept-wise Attendance</span></div><canvas id="deptAttChart" height="220"></canvas></div>
+        <div class="chart-card"><div class="card-header"><span class="card-title">Monthly Trend</span></div><canvas id="attTrendChart" height="220"></canvas></div>
+      </div>
+    </div>`;
+  setTimeout(()=>{
+    mkChart('deptAttChart','bar',['CSE','ECE','EEE','MECH','CIVIL','IT'],[{label:'Attendance %',data:[87,82,79,74,88,91],backgroundColor:'rgba(155,28,28,.8)',borderRadius:6}],{plugins:{legend:{display:false}},scales:{y:{min:60,max:100,grid:{color:'rgba(0,0,0,.04)'}},x:{grid:{display:false}}}});
+    mkChart('attTrendChart','line',['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'],[{label:'%',data:[82,84,79,85,88,86,83,81,84,87],borderColor:'#9b1c1c',backgroundColor:'rgba(155,28,28,.1)',fill:true,tension:.4,borderWidth:3,pointRadius:4}],{plugins:{legend:{display:false}},scales:{y:{min:70,max:100,grid:{color:'rgba(0,0,0,.04)'}},x:{grid:{display:false}}}});
+  },100);
+}
+
+// ══ RESULTS ══════════════════════════════════════════════════
+function calcGrade(total) {
+  if(total>=90) return {grade:'O',  gp:10};
+  if(total>=80) return {grade:'A+', gp:9};
+  if(total>=70) return {grade:'A',  gp:8};
+  if(total>=60) return {grade:'B+', gp:7};
+  if(total>=50) return {grade:'B',  gp:6};
+  if(total>=40) return {grade:'C',  gp:5};
+  return {grade:'F', gp:0};
+}
+function calcGradePreview() {
+  const int=parseInt(g('r-int').value)||0, ext=parseInt(g('r-ext').value)||0;
+  const el=g('r-grade-preview'); if(el) el.value=calcGrade(int+ext).grade;
+}
+
+function renderResults() {
+  const sec = document.getElementById('section-results');
+  sec.innerHTML = `
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'r-manage')">Manage Results</button>
+      <button class="tab-btn" onclick="switchTab(this,'r-bulk')">Bulk Upload</button>
+      <button class="tab-btn" onclick="switchTab(this,'r-analytics')">Analytics</button>
+    </div>
+    <div class="tab-pane active" id="tab-r-manage">
+      <div class="toolbar">
+        <div class="search-wrap"><i class="fas fa-search"></i><input type="text" class="form-control search-input" placeholder="Search by name or roll…"></div>
+        <select class="form-control" style="width:150px"><option>All Departments</option><option>CSE</option><option>ECE</option></select>
+        <select class="form-control" style="width:140px"><option>All Semesters</option><option>Sem 1</option><option>Sem 3</option><option>Sem 5</option><option>Sem 7</option></select>
+        <button class="btn btn-primary" onclick="openModal('modal-add-result')"><i class="fas fa-plus"></i> Add Result</button>
+        <button class="btn btn-sage" onclick="toast('Results published!','success')"><i class="fas fa-bullhorn"></i> Publish All</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:20px 22px 16px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title">Examination Results</span></div>
+        <div class="table-wrap" style="border:none;border-radius:0;"><table>
+          <thead><tr><th>Roll No.</th><th>Name</th><th>Subject</th><th>Internal</th><th>External</th><th>Total</th><th>Grade</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="r-tbody"></tbody>
+        </table></div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tab-r-bulk">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Bulk Result Upload</span><button class="btn btn-ghost btn-sm" onclick="downloadResultTemplate()"><i class="fas fa-download"></i> Template</button></div>
+        <div class="drop-zone" onclick="document.getElementById('r-file').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropResultFile(event)">
+          <input type="file" id="r-file" class="hidden" accept=".csv,.xlsx,.xls" onchange="handleResultFile(this)">
+          <i class="fas fa-file-spreadsheet"></i>
+          <p style="font-weight:600;color:var(--navy);font-size:16px;">Drop CSV or Excel file</p>
+          <small style="color:var(--text-3);">Columns: Roll No, Student Name, Subject Code, Subject Name, Semester, Internal, External</small>
+        </div>
+        <div id="r-preview" class="hidden" style="margin-top:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <strong id="r-preview-count" style="font-family:'Playfair Display',serif;font-size:18px;color:var(--navy);"></strong>
+            <div class="flex gap-8">
+              <button class="btn btn-ghost btn-sm" onclick="g('r-preview').classList.add('hidden')"><i class="fas fa-times"></i> Clear</button>
+              <button class="btn btn-primary btn-sm" onclick="importBulkResults()"><i class="fas fa-check"></i> Import</button>
+            </div>
+          </div>
+          <div class="table-wrap" style="max-height:300px;overflow-y:auto;"><table>
+            <thead><tr><th>#</th><th>Roll No.</th><th>Name</th><th>Subject</th><th>Int.</th><th>Ext.</th><th>Total</th><th>Grade</th></tr></thead>
+            <tbody id="r-preview-tbody"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tab-r-analytics">
+      <div class="stat-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px;" id="r-stat-grid"></div>
+      <div class="chart-grid" style="margin-bottom:20px;">
+        <div class="chart-card"><div class="card-header"><span class="card-title">Grade Distribution</span></div><canvas id="gradeDist" height="230"></canvas></div>
+        <div class="chart-card"><div class="card-header"><span class="card-title">Department Performance</span></div><canvas id="deptPerf" height="230"></canvas></div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card"><div class="card-header"><span class="card-title">Top Performers</span></div><div class="rank-list" id="toppers-list"></div></div>
+        <div class="chart-card"><div class="card-header"><span class="card-title">Subject Pass Rates</span></div><canvas id="subPass" height="230"></canvas></div>
+      </div>
+    </div>`;
+  renderResultRows();
+  setTimeout(()=>updateResultAnalytics(),80);
+}
+
+function renderResultRows() {
+  const tbody=document.getElementById('r-tbody'); if(!tbody) return;
+  tbody.innerHTML=S.results.map(r=>`<tr>
+    <td><span class="font-mono" style="font-size:12px;color:var(--text-3);">${r.roll}</span></td>
+    <td><strong style="color:var(--navy);">${r.name}</strong></td>
+    <td><span style="font-weight:500;">${r.sub}</span><br><span style="font-size:11.5px;color:var(--text-3);">${r.code}</span></td>
+    <td>${r.int}/25</td><td>${r.ext}/75</td>
+    <td style="color:var(--navy);"><strong>${r.total}/100</strong></td>
+    <td><span class="badge badge-${r.grade==='F'?'danger':r.grade==='O'?'success':'info'}" style="border:none;">${r.grade}</span></td>
+    <td><span class="badge badge-${r.status==='Pass'?'success':'danger'}" style="border:none;">${r.status}</span></td>
+    <td><div class="flex gap-6">
+      <button class="btn btn-icon btn-ghost"><i class="fas fa-eye" style="font-size:12px;"></i></button>
+      <button class="btn btn-icon btn-outline"><i class="fas fa-edit" style="font-size:12px;"></i></button>
+      <button class="btn btn-icon btn-danger" onclick="delResult(${r.id})"><i class="fas fa-trash" style="font-size:12px;"></i></button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function addResult() {
+  const roll=g('r-roll').value.trim(), sub=g('r-sub').value.trim();
+  if(!roll||!sub){toast('Fill required fields','error');return;}
+  const int=parseInt(g('r-int').value)||0, ext=parseInt(g('r-ext').value)||0;
+  const {grade} = calcGrade(int+ext);
+  const stu = S.students.find(s=>s.roll===roll);
+  S.results.push({id:Date.now(),roll,name:stu?`${stu.fn} ${stu.ln}`:roll,code:g('r-code').value,sub,sem:g('r-sem').value,int,ext,total:int+ext,grade,status:grade==='F'?'Fail':'Pass',dept:stu?.dept||'CSE'});
+  closeModal('modal-add-result');renderResultRows();updateResultAnalytics();toast('Result added','success');
+}
+function delResult(id){S.results=S.results.filter(r=>r.id!==id);renderResultRows();updateResultAnalytics();}
+
+function updateResultAnalytics() {
+  const results=S.results;
+  const gc={O:0,'A+':0,A:0,'B+':0,B:0,C:0,F:0};
+  const deptT={},deptP={};
+  const subT={},subP={};
+  const stuAvg={};
+  results.forEach(r=>{
+    gc[r.grade]=(gc[r.grade]||0)+1;
+    deptT[r.dept]=(deptT[r.dept]||0)+1;
+    if(r.status==='Pass') deptP[r.dept]=(deptP[r.dept]||0)+1;
+    subT[r.sub]=(subT[r.sub]||0)+1;
+    if(r.status==='Pass') subP[r.sub]=(subP[r.sub]||0)+1;
+    if(!stuAvg[r.roll]) stuAvg[r.roll]={name:r.name,total:0,cnt:0,dept:r.dept};
+    stuAvg[r.roll].total+=r.total; stuAvg[r.roll].cnt++;
+  });
+  const pass=results.filter(r=>r.status==='Pass').length;
+  const passRate=results.length?Math.round(pass/results.length*100):0;
+  const avg=results.length?Math.round(results.reduce((a,r)=>a+r.total,0)/results.length):0;
+  const uniq=new Set(results.map(r=>r.roll)).size;
+  const grid=g('r-stat-grid');
+  if(grid) grid.innerHTML=[
+    {i:'fa-users',c:'teal',v:uniq,l:'Students Assessed'},
+    {i:'fa-chart-line',c:'gold',v:`${avg}%`,l:'Average Marks'},
+    {i:'fa-check-circle',c:'sage',v:`${passRate}%`,l:'Pass Rate'},
+    {i:'fa-trophy',c:'red',v:(gc['O']+gc['A+']),l:'Distinction'},
+    {i:'fa-times-circle',c:'red',v:gc['F'],l:'Failed'},
+  ].map(s=>`<div class="stat-card c-${s.c}"><div class="stat-card-accent"></div><div class="stat-icon-wrap"><i class="fas ${s.i}"></i></div><div class="stat-val">${s.v}</div><div class="stat-lbl">${s.l}</div></div>`).join('');
+
+  setTimeout(()=>{
+    mkChart('gradeDist','doughnut',Object.keys(gc),[{data:Object.values(gc),backgroundColor:['rgba(22,101,52,0.8)','rgba(14,116,144,0.8)','rgba(26,39,68,0.8)','rgba(212,168,83,0.8)','rgba(155,28,28,0.8)','rgba(197,48,48,0.8)','rgba(239,68,68,0.8)'],borderWidth:2,borderColor:'transparent'}],{plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}});
+    const depts=Object.keys(deptT);
+    mkChart('deptPerf','bar',depts,[{label:'Pass Rate %',data:depts.map(d=>Math.round((deptP[d]||0)/deptT[d]*100)),backgroundColor:'rgba(155,28,28,.8)',borderRadius:6}],{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,grid:{color:'rgba(0,0,0,.04)'}},x:{grid:{display:false}}}});
+    const subs=Object.keys(subT).slice(0,6);
+    mkChart('subPass','bar',subs,[{label:'Pass %',data:subs.map(s=>Math.round((subP[s]||0)/subT[s]*100)),backgroundColor:'rgba(14,116,144,.8)',borderRadius:6}],{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100},x:{ticks:{font:{size:10}}}}});
+  },80);
+
+  const toppers=Object.values(stuAvg).map(s=>({...s,avg:Math.round(s.total/s.cnt)})).sort((a,b)=>b.avg-a.avg).slice(0,5);
+  const list=g('toppers-list'); if(!list) return;
+  list.innerHTML=toppers.map((p,i)=>`<div class="rank-row">
+    <div class="rank-num ${i===0?'rank-gold':i===1?'rank-silver':i===2?'rank-bronze':'rank-plain'}">${i+1}</div>
+    <div style="flex:1"><div style="font-size:13.5px;font-weight:600;color:var(--navy);">${p.name}</div><div style="font-size:11.5px;color:var(--text-3);">${p.dept}</div></div>
+    <div class="font-mono" style="font-size:15px;font-weight:700;color:var(--crimson);">${p.avg}%</div>
+  </div>`).join('');
+}
+
+function handleResultFile(inp) {
+  parseFile(inp.files[0],data=>{
+    S._bulkResults=data;
+    const tbody=g('r-preview-tbody'); g('r-preview-count').textContent=`${data.length} results ready to import`;
+    tbody.innerHTML=data.map((r,i)=>{
+      const int=parseInt(r['Internal Marks']||r[6])||0,ext=parseInt(r['External Marks']||r[7])||0;
+      const {grade}=calcGrade(int+ext);
+      return `<tr><td>${i+1}</td><td>${r['Roll No']||r[0]||''}</td><td>${r['Student Name']||r[1]||''}</td><td>${r['Subject Name']||r[3]||''}</td><td>${int}</td><td>${ext}</td><td><strong>${int+ext}</strong></td><td><span class="badge badge-${grade==='F'?'danger':'success'}" style="border:none;">${grade}</span></td></tr>`;
+    }).join('');
+    g('r-preview').classList.remove('hidden');
+  });
+}
+function importBulkResults() {
+  let added=0;
+  S._bulkResults.forEach(r=>{
+    const int=parseInt(r['Internal Marks']||r[6])||0,ext=parseInt(r['External Marks']||r[7])||0;
+    const {grade}=calcGrade(int+ext);
+    S.results.push({id:Date.now()+added,roll:r['Roll No']||r[0]||'',name:r['Student Name']||r[1]||'',code:r['Subject Code']||r[2]||'',sub:r['Subject Name']||r[3]||'',sem:'Sem 1',int,ext,total:int+ext,grade,status:grade==='F'?'Fail':'Pass',dept:'CSE'});
+    added++;
+  });
+  g('r-preview').classList.add('hidden');renderResultRows();updateResultAnalytics();toast(`${added} results imported`,'success');
+}
+function dropResultFile(e){e.preventDefault();e.target.classList.remove('dragover');handleResultFile({files:e.dataTransfer.files});}
+function downloadResultTemplate(){dlFile('result_template.csv','Roll No,Student Name,Subject Code,Subject Name,Semester,Exam Type,Internal Marks,External Marks\n2122CS001,Student Name,CS6301,Data Structures,Sem 3,Semester Exam,22,68','text/csv');}
+
+// ══ FEES ════════════════════════════════════════════════════
+function renderFees() {
+  const sec=document.getElementById('section-fees');
+  const paid=S.fees.filter(f=>f.status==='Paid').reduce((a,f)=>a+f.amount,0);
+  const pend=S.fees.filter(f=>f.status!=='Paid').reduce((a,f)=>a+f.amount,0);
+  sec.innerHTML=`
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'fee-records')">Fee Records</button>
+      <button class="tab-btn" onclick="switchTab(this,'fee-analytics')">Analytics</button>
+      <button class="tab-btn" onclick="switchTab(this,'fee-defaulters')">Defaulters</button>
+    </div>
+    <div class="tab-pane active" id="tab-fee-records">
+      <div class="toolbar">
+        <div class="search-wrap"><i class="fas fa-search"></i><input type="text" class="form-control search-input" placeholder="Search by name or roll…"></div>
+        <select class="form-control" style="width:140px"><option>All Status</option><option>Paid</option><option>Pending</option><option>Overdue</option></select>
+        <button class="btn btn-primary" onclick="openModal('modal-add-fee')"><i class="fas fa-plus"></i> Add Record</button>
+        <button class="btn btn-ghost"><i class="fas fa-download"></i> Export</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:20px 22px 16px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title">Fee Management</span></div>
+        <div class="table-wrap" style="border:none;border-radius:0;"><table>
+          <thead><tr><th>Receipt No.</th><th>Student</th><th>Roll No.</th><th>Fee Type</th><th>Amount</th><th>Due Date</th><th>Paid On</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="fee-tbody"></tbody>
+        </table></div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tab-fee-analytics">
+      <div class="stat-grid" style="margin-bottom:20px;">
+        <div class="stat-card c-gold"><div class="stat-card-accent"></div><div class="stat-icon-wrap"><i class="fas fa-rupee-sign"></i></div><div class="stat-val">₹${(paid+pend).toLocaleString()}</div><div class="stat-lbl">Total Due</div></div>
+        <div class="stat-card c-sage"><div class="stat-card-accent"></div><div class="stat-icon-wrap"><i class="fas fa-check-circle"></i></div><div class="stat-val">₹${paid.toLocaleString()}</div><div class="stat-lbl">Collected</div></div>
+        <div class="stat-card c-red"><div class="stat-card-accent"></div><div class="stat-icon-wrap"><i class="fas fa-exclamation-circle"></i></div><div class="stat-val">₹${pend.toLocaleString()}</div><div class="stat-lbl">Pending</div></div>
+        <div class="stat-card c-teal"><div class="stat-card-accent"></div><div class="stat-icon-wrap"><i class="fas fa-percent"></i></div><div class="stat-val">${Math.round(paid/(paid+pend)*100)||0}%</div><div class="stat-lbl">Collection Rate</div></div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card"><div class="card-header"><span class="card-title">Monthly Collection</span></div><canvas id="feeMonthChart" height="240"></canvas></div>
+        <div class="chart-card"><div class="card-header"><span class="card-title">Fee by Type</span></div><canvas id="feeTypeChart" height="240"></canvas></div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tab-fee-defaulters">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:20px 22px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;">
+          <span class="card-title">Fee Defaulters</span>
+          <button class="btn btn-primary btn-sm" onclick="toast('Reminders sent!','success')"><i class="fas fa-envelope"></i> Send All Reminders</button>
+        </div>
+        <div class="table-wrap" style="border:none;border-radius:0;"><table>
+          <thead><tr><th>Student</th><th>Roll No.</th><th>Fee Type</th><th>Amount Due</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>${S.fees.filter(f=>f.status!=='Paid').map(f=>`<tr>
+            <td><strong style="color:var(--navy);">${f.student}</strong></td>
+            <td><span class="font-mono" style="font-size:12px;">${f.roll}</span></td>
+            <td>${f.type}</td>
+            <td style="color:var(--crimson);font-weight:700;">₹${f.amount.toLocaleString()}</td>
+            <td><span class="badge badge-${f.status==='Overdue'?'danger':'warning'}" style="border:none;">${f.status}</span></td>
+            <td><button class="btn btn-xs btn-outline" onclick="toast('Reminder sent!','success')"><i class="fas fa-envelope"></i> Remind</button></td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+    </div>`;
+  renderFeeRows();
+  setTimeout(()=>{
+    mkChart('feeMonthChart','line',['Jun','Jul','Aug','Sep','Oct','Nov'],[{label:'₹',data:[180000,220000,210000,260000,240000,280000],borderColor:'#9b1c1c',backgroundColor:'rgba(155,28,28,.1)',fill:true,tension:.4,borderWidth:3,pointRadius:4}],{plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'rgba(0,0,0,.04)'}},x:{grid:{display:false}}}});
+    mkChart('feeTypeChart','doughnut',['Tuition','Hostel','Bus','Exam','Lab'],[{data:[450000,185000,62000,38000,28000],backgroundColor:['#9b1c1c','#d4a853','#0e7490','#166534','#1a2744'],borderWidth:2,borderColor:'transparent'}],{plugins:{legend:{position:'right',labels:{font:{size:11.5},boxWidth:12}}}});
+  },100);
+}
+
+function renderFeeRows() {
+  const tbody=g('fee-tbody'); if(!tbody) return;
+  tbody.innerHTML=S.fees.map(f=>`<tr>
+    <td><span class="font-mono" style="font-size:12px;color:var(--text-3);">${f.receipt}</span></td>
+    <td><strong style="color:var(--navy);">${f.student}</strong></td>
+    <td><span class="font-mono" style="font-size:12px;">${f.roll}</span></td>
+    <td><span style="font-weight:500;">${f.type}</span></td>
+    <td style="color:var(--navy);"><strong>₹${f.amount.toLocaleString()}</strong></td>
+    <td>${f.due}</td>
+    <td>${f.paid||'—'}</td>
+    <td><span class="badge badge-${f.status==='Paid'?'success':f.status==='Overdue'?'danger':'warning'}" style="border:none;">${f.status}</span></td>
+    <td><div class="flex gap-6">
+      ${f.status!=='Paid'?`<button class="btn btn-xs btn-sage" onclick="markFeePaid(${f.id})"><i class="fas fa-check"></i> Mark Paid</button>`:''}
+      <button class="btn btn-icon btn-ghost"><i class="fas fa-file-pdf" style="font-size:13px;"></i></button>
+    </div></td>
+  </tr>`).join('');
+}
+function markFeePaid(id){const f=S.fees.find(f=>f.id===id);if(f){f.status='Paid';f.paid=new Date().toISOString().split('T')[0];renderFeeRows();toast('Fee marked as paid','success');}}
+function addFee(){const roll=g('fee-roll').value,type=g('fee-type').value,amount=parseInt(g('fee-amt').value)||0;const stu=S.students.find(s=>s.roll===roll);S.fees.push({id:Date.now(),receipt:`CITS-${Date.now().toString().slice(-4)}`,student:stu?`${stu.fn} ${stu.ln}`:roll,roll,type,amount,due:g('fee-due').value,paid:null,status:g('fee-status').value,mode:g('fee-mode').value});closeModal('modal-add-fee');renderFeeRows();toast('Fee record added','success');}
+
+// ══ NOTICES ══════════════════════════════════════════════════
+function renderNotices() {
+  const sec=document.getElementById('section-announcements');
+  sec.innerHTML=`
+    <div class="toolbar">
+      <div class="search-wrap"><i class="fas fa-search"></i><input type="text" class="form-control search-input" placeholder="Search announcements…"></div>
+      <select class="form-control" style="width:130px"><option>All</option><option>Urgent</option><option>Important</option><option>Normal</option></select>
+      <button class="btn btn-primary" onclick="openModal('modal-add-notice')"><i class="fas fa-plus"></i> New Notice</button>
+    </div>
+    <div class="notice-grid" id="notices-container"></div>`;
+  const pri={Urgent:'urgent',Important:'important',Normal:'normal'};
+  const badges={Urgent:'danger',Important:'warning',Normal:'success'};
+  const colors={Urgent:'var(--crimson)',Important:'var(--amber)',Normal:'var(--sage-l)'};
+  
+  g('notices-container').innerHTML=S.notices.map(n=>`<div class="notice-card ${pri[n.pri]||'normal'}" style="border-top: 4px solid ${colors[n.pri]||'var(--sage)'}">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+      <span class="badge badge-${badges[n.pri]||'info'}" style="border:none;">${n.pri}</span>
+      <span style="font-size:11px;color:var(--text-3);font-weight:600;">${n.date}</span>
+    </div>
+    <h3 style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:10px;line-height:1.3;">${n.title}</h3>
+    <p style="font-size:13px;color:var(--text-2);line-height:1.6;">${n.body.substring(0,110)}${n.body.length>110?'…':''}</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;">
+      <span class="badge badge-navy" style="background:rgba(17,24,39,0.1);color:var(--navy);">${n.aud}</span>
+      <div class="flex gap-6">
+        <button class="btn btn-icon btn-ghost" onclick="editNotice(${n.id})"><i class="fas fa-edit" style="font-size:13px;"></i></button>
+        <button class="btn btn-icon btn-danger" onclick="delNotice(${n.id})"><i class="fas fa-trash" style="font-size:13px;"></i></button>
+      </div>
+    </div>
+  </div>`).join('');
+}
+function addNotice(){const title=g('n-title').value.trim(),body=g('n-body').value.trim();if(!title||!body){toast('Fill required fields','error');return;}S.notices.unshift({id:Date.now(),title,body,pri:g('n-pri').value,aud:g('n-aud').value,date:new Date().toLocaleDateString('en-IN'),till:g('n-till').value});closeModal('modal-add-notice');renderNotices();if(g('n-email').checked)toast('Notice published and email sent!','success');else toast('Notice published','success');}
+function delNotice(id){S.notices=S.notices.filter(n=>n.id!==id);renderNotices();}
+function editNotice(id){toast('Edit notice (integrate with API)','info');}
+
+// ══ DEPARTMENTS ══════════════════════════════════════════════
+const DEPT_DATA = [
+  {name:'Computer Science & Engineering',short:'CSE',  hod:'Dr. Ravi Kumar',   students:340,faculty:28,est:'1984',icon:'💻',color:'#9b1c1c'},
+  {name:'Electronics & Communication',   short:'ECE',  hod:'Dr. Meenakshi Iyer',students:280,faculty:24,est:'1985',icon:'📡',color:'#0e7490'},
+  {name:'Electrical & Electronics',       short:'EEE',  hod:'Dr. Suresh Babu',  students:210,faculty:20,est:'1986',icon:'⚡',color:'#d4a853'},
+  {name:'Mechanical Engineering',         short:'MECH', hod:'Dr. Srinivasan P', students:190,faculty:22,est:'1984',icon:'⚙️',color:'#166534'},
+  {name:'Civil Engineering',              short:'CIVIL',hod:'Dr. Jayanthi R',   students:160,faculty:16,est:'1988',icon:'🏛️',color:'#1a2744'},
+  {name:'Information Technology',         short:'IT',   hod:'Dr. Priya S',      students:130,faculty:12,est:'1999',icon:'🖥️',color:'#c53030'},
+];
+function renderDepts(){const sec=document.getElementById('section-departments');sec.innerHTML=`<div class="toolbar"><button class="btn btn-primary"><i class="fas fa-plus"></i> Add Department</button></div><div class="dept-grid" id="dept-grid"></div>`;g('dept-grid').innerHTML=DEPT_DATA.map(d=>`<div class="dept-card" style="border-top-color:${d.color};">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+    <div style="font-size:36px;line-height:1;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.1));">${d.icon}</div>
+    <div><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:var(--navy);">${d.short}</div><div style="font-size:12.5px;color:var(--text-3);font-weight:500;">${d.name}</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+    <div style="text-align:center;padding:12px 8px;background:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.6);border-radius:10px;"><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--navy);line-height:1;">${d.students}</div><div style="font-size:11px;color:var(--text-3);margin-top:4px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Students</div></div>
+    <div style="text-align:center;padding:12px 8px;background:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.6);border-radius:10px;"><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--navy);line-height:1;">${d.faculty}</div><div style="font-size:11px;color:var(--text-3);margin-top:4px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Faculty</div></div>
+  </div>
+  <div style="font-size:13px;color:var(--text-2);margin-bottom:6px;"><strong style="color:var(--navy);">HOD:</strong> ${d.hod}</div>
+  <div style="font-size:13px;color:var(--text-2);margin-bottom:18px;"><strong style="color:var(--navy);">Est:</strong> ${d.est}</div>
+  <div class="flex gap-8">
+    <button class="btn btn-outline btn-sm" style="flex:1;">View Details</button>
+    <button class="btn btn-ghost btn-sm"><i class="fas fa-edit"></i></button>
+  </div>
+</div>`).join('');}
+
+// ══ CALENDAR ════════════════════════════════════════════════
+let calDate = new Date();
+function renderCalendar() {
+  const sec=document.getElementById('section-calendar');
+  sec.innerHTML=`<div class="chart-grid" style="grid-template-columns:1fr 300px;">
+    <div class="card">
+      <div class="card-header">
+        <div class="flex gap-8 items-center">
+          <button class="btn btn-ghost btn-sm" onclick="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+          <span class="card-title" id="cal-title" style="min-width:140px;text-align:center;">Month</span>
+          <button class="btn btn-ghost btn-sm" onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-event')"><i class="fas fa-plus"></i> Add Event</button>
+      </div>
+      <div id="cal-body"></div>
+    </div>
+    <div class="card"><div class="card-header" style="margin-bottom:14px;"><span class="card-title" style="font-size:17px;">Upcoming Events</span></div>
+      <div id="cal-upcoming" style="display:flex;flex-direction:column;gap:12px;"></div>
+    </div>
+  </div>`;
+  drawCalendar();
+}
+function drawCalendar() {
+  const y=calDate.getFullYear(),m=calDate.getMonth();
+  g('cal-title').textContent=calDate.toLocaleString('default',{month:'long',year:'numeric'});
+  const fd=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+  const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html=`<div class="cal-grid" style="background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.5);">`;
+  dayNames.forEach(d=>html+=`<div class="cal-hdr-cell" style="background:rgba(17,24,39,0.85);backdrop-filter:blur(10px);">${d}</div>`);
+  for(let i=0;i<fd;i++) html+=`<div style="background:rgba(255,255,255,0.2);min-height:78px;"></div>`;
+  for(let d=1;d<=days;d++) {
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const evs=S.events.filter(e=>e.date===ds);
+    const today=ds===new Date().toISOString().split('T')[0];
+    html+=`<div class="cal-day" style="background:rgba(255,255,255,0.5);border:1px solid transparent;min-height:78px;" onmouseenter="this.style.background='rgba(255,255,255,0.8)';this.style.borderColor='var(--gold)'" onmouseleave="this.style.background='rgba(255,255,255,0.5)';this.style.borderColor='transparent'">
+      <div class="cal-day-num${today?' today':''}">${d}</div>
+      ${evs.map(e=>`<div class="cal-event" style="box-shadow:0 2px 4px rgba(155,28,28,0.2);">${e.title}</div>`).join('')}
+    </div>`;
+  }
+  html+=`</div>`;
+  g('cal-body').innerHTML=html;
+  
+  g('cal-upcoming').innerHTML=S.events.sort((a,b)=>new Date(a.date)-new Date(b.date)).map(e=>`<div style="padding:14px;background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.9);border-radius:12px;border-left:4px solid var(--crimson);box-shadow:0 4px 10px rgba(0,0,0,0.03);">
+    <div style="font-size:13.5px;font-weight:600;color:var(--navy);">${e.title}</div>
+    <div style="font-size:12px;color:var(--text-3);margin-top:4px;font-weight:500;"><i class="far fa-calendar-alt"></i> ${new Date(e.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+    <span class="badge badge-info" style="margin-top:8px;background:rgba(30,64,175,0.1);border:none;">${e.cat}</span>
+  </div>`).join('');
+}
+function prevMonth(){calDate.setMonth(calDate.getMonth()-1);drawCalendar();}
+function nextMonth(){calDate.setMonth(calDate.getMonth()+1);drawCalendar();}
+function addEvent(){const title=g('ev-title').value.trim(),date=g('ev-date').value;if(!title||!date){toast('Fill required fields','error');return;}S.events.push({id:Date.now(),title,date,cat:g('ev-cat').value,desc:g('ev-desc').value});closeModal('modal-add-event');drawCalendar();toast('Event added','success');}
+
+// ══ TIMETABLE ════════════════════════════════════════════════
+function renderTT(key) {
+  const sec=document.getElementById('section-timetable');
+  sec.innerHTML=`<div class="toolbar">
+    <select class="form-control" style="width:220px" onchange="renderTT(this.value)">
+      <option value="CSE-3B">CSE — III B</option>
+      <option value="CSE-2A">CSE — II A</option>
+    </select>
+    <button class="btn btn-primary btn-sm" onclick="toast('Add timetable slot','info')"><i class="fas fa-plus"></i> Add Slot</button>
+    <button class="btn btn-ghost btn-sm"><i class="fas fa-print"></i> Print</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;"><div class="card-header" style="padding:20px 22px 16px;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:0;"><span class="card-title" style="font-size:18px;">Class Timetable — ${key.replace('-',' → ')}</span></div>
+    <div id="tt-body" style="padding:20px;"></div>
+  </div>`;
+  const data=TT_DATA[key];
+  if(!data){g('tt-body').innerHTML='<p style="color:var(--text-3);padding:20px">No timetable data</p>';return;}
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html=`<div class="tt-grid" style="background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.5);">`;
+  html+=`<div class="tt-cell tt-hdr" style="background:rgba(17,24,39,0.85);backdrop-filter:blur(10px);">Time</div>`;
+  days.forEach(d=>html+=`<div class="tt-cell tt-hdr" style="background:rgba(17,24,39,0.85);backdrop-filter:blur(10px);">${d}</div>`);
+  Object.keys(data).forEach(time=>{
+    html+=`<div class="tt-cell tt-time" style="background:rgba(255,255,255,0.2);">${time}</div>`;
+    days.forEach(d=>{
+      const s=data[time][d]||'';
+      if(s){
+        const p=s.split('\n');
+        html+=`<div class="tt-cell" style="background:rgba(255,255,255,0.5);"><div class="tt-slot" style="background:rgba(212,168,83,0.15);border-left:3px solid var(--gold);box-shadow:0 2px 5px rgba(0,0,0,0.02);"><strong style="font-size:12.5px;">${p[0]}</strong>${p[1]?`<small style="color:var(--text-3);font-weight:500;">${p[1]}</small>`:''}</div></div>`;
+      }
+      else html+=`<div class="tt-cell" style="background:rgba(255,255,255,0.5);"></div>`;
+    });
+  });
+  html+=`</div>`;
+  g('tt-body').innerHTML=html;
+}
+
+// ══ APPROVALS ════════════════════════════════════════════════
+function renderApprovals(){
+  const pending=S.students.filter(s=>s.status==='Pending');
+  const sec=document.getElementById('section-approvals');
+  sec.innerHTML=`<div class="card" style="padding:0;overflow:hidden;">
+    <div style="padding:20px 22px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;">
+      <span class="card-title">Pending Approvals</span>
+      <span class="badge badge-danger" style="border:none;">${pending.length} pending</span>
+    </div>
+    <div class="table-wrap" style="border:none;border-radius:0;"><table>
+      <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Applied On</th><th>Department</th><th>Actions</th></tr></thead>
+      <tbody>${pending.length?pending.map(s=>`<tr>
+        <td><strong style="color:var(--navy);">${s.fn} ${s.ln}</strong></td>
+        <td><span class="badge badge-info" style="border:none;">Student</span></td>
+        <td>${s.email}</td>
+        <td style="color:var(--text-2);">${new Date().toLocaleDateString('en-IN')}</td>
+        <td>${s.dept}</td>
+        <td><div class="flex gap-8">
+          <button class="btn btn-xs btn-sage" onclick="approveUser(${s.id})"><i class="fas fa-check"></i> Approve</button>
+          <button class="btn btn-xs btn-danger" onclick="rejectUser(${s.id})"><i class="fas fa-times"></i> Reject</button>
+        </div></td>
+      </tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:40px;font-family:\'Playfair Display\',serif;font-size:16px;">No pending approvals</td></tr>'}</tbody>
+    </table></div>
+  </div>`;
+}
+function approveUser(id){const s=S.students.find(s=>s.id===id);if(s){s.status='Active';renderApprovals();toast(`${s.fn} ${s.ln} approved!`,'success');buildSidebar();}}
+function rejectUser(id){S.students=S.students.filter(s=>s.id!==id);renderApprovals();toast('User rejected','info');buildSidebar();}
+
+// ══ SECURITY ════════════════════════════════════════════════
+function renderSecurity(){
+  const sec=document.getElementById('section-security');
+  const logs=[
+    {time:'2025-10-28 09:14',user:'admin@cits.ac.in',action:'LOGIN',         ip:'10.0.1.5',  status:'Success',detail:'Admin login from office PC'},
+    {time:'2025-10-28 09:30',user:'admin@cits.ac.in',action:'BULK_EMAIL',    ip:'10.0.1.5',  status:'Success',detail:'340 emails dispatched'},
+    {time:'2025-10-27 16:22',user:'faculty@cits.ac.in',action:'RESULT_PUBLISHED',ip:'10.0.1.8',status:'Success',detail:'Sem 3 CSE results'},
+    {time:'2025-10-27 14:05',user:'unknown@mail.com', action:'LOGIN_FAILED', ip:'192.168.5.22',status:'Failed',detail:'Invalid credentials'},
+    {time:'2025-10-27 11:30',user:'admin@cits.ac.in',action:'OTP_SENT',      ip:'10.0.1.5',  status:'Success',detail:'Password reset OTP'},
+    {time:'2025-10-26 18:45',user:'student@cits.ac.in',action:'PROFILE_UPDATE',ip:'10.0.2.14',status:'Success',detail:'Phone number updated'},
+  ];
+  sec.innerHTML=`<div class="card" style="padding:0;overflow:hidden;">
+    <div style="padding:20px 22px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;">
+      <span class="card-title">Security & Audit Logs</span>
+      <button class="btn btn-ghost btn-sm"><i class="fas fa-download"></i> Export</button>
+    </div>
+    <div class="table-wrap" style="border:none;border-radius:0;"><table>
+      <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>IP Address</th><th>Status</th><th>Details</th></tr></thead>
+      <tbody>${logs.map(l=>`<tr>
+        <td><span class="font-mono" style="font-size:12px;color:var(--text-3);">${l.time}</span></td>
+        <td style="font-size:13.5px;font-weight:500;color:var(--navy);">${l.user}</td>
+        <td><span class="badge badge-${l.action.includes('FAILED')?'danger':'teal'}" style="border:none;">${l.action}</span></td>
+        <td><span class="font-mono" style="font-size:12px;background:rgba(0,0,0,0.05);padding:3px 6px;border-radius:4px;">${l.ip}</span></td>
+        <td><span class="badge badge-${l.status==='Success'?'success':'danger'}" style="border:none;">${l.status}</span></td>
+        <td style="font-size:12.5px;color:var(--text-2);">${l.detail}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>`;
+}
+
+// ══ BULK EMAIL ════════════════════════════════════════════════
+const RCPT_GROUPS = {
+  all:     {label:'All Students (8)',count:8},
+  cse:     {label:'CSE Students (3)',count:3},
+  ece:     {label:'ECE Students (1)',count:1},
+  faculty: {label:'All Faculty (4)', count:4},
+  parents: {label:'All Parents (8)', count:8},
+  yr1:     {label:'1st Year Students',count:2},
+  yr2:     {label:'2nd Year Students',count:1},
+};
+const EMAIL_TEMPLATES = {
+  exam:    {sub:'End Semester Examination Schedule — November 2025',body:`<p>Dear Students,</p><p>This is to inform you that the <strong>End Semester Examinations</strong> are scheduled from <strong>[DATE]</strong>.</p><p>📅 <strong>Reporting Time:</strong> 9:00 AM<br>📍 <strong>Venue:</strong> [HALL NO.]</p><p>Please carry your Hall Ticket and College ID. All the best!</p><br><p><em>Examination Section — ${APP_CONFIG.COLLEGE}</em></p>`},
+  fee:     {sub:'Fee Payment Reminder — Action Required',body:`<p>Dear {{student_name}},</p><p>This is a friendly reminder that your <strong>semester fee payment is pending</strong> as of ${new Date().toLocaleDateString('en-IN')}.</p><p>Kindly pay before the due date to avoid late fees.</p><p>Contact: fees@cits.ac.in</p><br><p><em>Finance Department — ${APP_CONFIG.COLLEGE}</em></p>`},
+  result:  {sub:'Your Examination Results Are Now Published',body:`<p>Dear Student,</p><p>Your <strong>Semester Examination Results</strong> are now available on the student portal.</p><p>Log in to view your grade sheet and CGPA. Revaluation requests must be submitted within 7 days.</p><br><p><em>Academic Section — ${APP_CONFIG.COLLEGE}</em></p>`},
+  event:   {sub:'You Are Invited — [Event Name]',body:`<p>Dear Students & Faculty,</p><p>We are delighted to invite you to <strong>[EVENT NAME]</strong>.</p><p>📅 <strong>Date:</strong> [DATE]<br>🕐 <strong>Time:</strong> [TIME]<br>📍 <strong>Venue:</strong> [VENUE]</p><br><p><em>Event Organizing Committee — ${APP_CONFIG.COLLEGE}</em></p>`},
+  attn:    {sub:'Attendance Warning — Urgent Action Required',body:`<p>Dear {{student_name}},</p><p>Your current attendance is <strong>below 75%</strong>, the minimum required for semester examinations.</p><p>Please improve your attendance immediately. Contact your class advisor for guidance.</p><br><p><em>Academic Department — ${APP_CONFIG.COLLEGE}</em></p>`},
+  welcome: {sub:`Welcome to ${APP_CONFIG.COLLEGE}`,body:`<p>Dear {{student_name}},</p><p>A warm welcome to <strong>${APP_CONFIG.COLLEGE}</strong>! We are delighted to have you in the CITS family.</p><p>Your portal credentials have been sent separately. Please change your password upon first login.</p><br><p><em>Dr. S. Ramachandran, Principal<br>${APP_CONFIG.COLLEGE}</em></p>`},
+};
+
+function initEmail() {
+  const sec = document.getElementById('section-email');
+  sec.innerHTML = `
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
+      <div>
+        <div class="email-compose">
+          <div class="card-header" style="margin-bottom:20px;border-bottom:1px solid rgba(0,0,0,0.06);">
+            <span class="card-title">Compose Email</span>
+            <div class="flex gap-8">
+              <button class="btn btn-ghost btn-sm" onclick="toast('Click a template →','info')"><i class="fas fa-file-alt"></i> Templates</button>
+              <button class="btn btn-primary btn-sm" onclick="sendBulkEmail()"><i class="fas fa-paper-plane"></i> Send</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Recipients</label>
+            <div class="flex gap-8" style="margin-bottom:8px;">
+              <select class="form-control" id="rcpt-group">
+                <option value="">Select Group…</option>
+                <option value="all">All Students</option>
+                <option value="cse">CSE Students</option>
+                <option value="ece">ECE Students</option>
+                <option value="faculty">All Faculty</option>
+                <option value="parents">All Parents</option>
+                <option value="yr1">1st Year Students</option>
+                <option value="yr2">2nd Year Students</option>
+              </select>
+              <button class="btn btn-gold btn-sm" onclick="addRcptGroup()"><i class="fas fa-plus"></i> Add</button>
+            </div>
+            <div class="recipient-tags" id="rcpt-tags" style="background:rgba(255,255,255,0.4);backdrop-filter:blur(5px);">
+              <input type="text" id="rcpt-manual" style="border:none;outline:none;font-size:13px;flex:1;min-width:180px;background:transparent;color:var(--navy);" placeholder="Or type email and press Enter…" onkeydown="addManualRcpt(event)">
+            </div>
+            <p style="font-size:11.5px;color:var(--text-3);margin-top:6px;font-weight:600;" id="rcpt-count">0 recipients</p>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">CC (optional)</label><input type="text" class="form-control" id="email-cc" placeholder="cc@cits.ac.in"></div>
+            <div class="form-group"><label class="form-label">BCC (optional)</label><input type="text" class="form-control" id="email-bcc" placeholder="bcc@cits.ac.in"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Subject *</label><input type="text" class="form-control" id="email-sub" placeholder="e.g. Semester Exam Schedule — November 2025"></div>
+          <div class="form-group">
+            <label class="form-label">Message Body</label>
+            <div style="border:1px solid rgba(255,255,255,0.8);border-radius:var(--radius);overflow:hidden;background:rgba(255,255,255,0.4);box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
+              <div style="display:flex;gap:4px;padding:8px 10px;background:rgba(255,255,255,0.6);border-bottom:1px solid rgba(0,0,0,0.05);flex-wrap:wrap;">
+                <button class="btn btn-xs btn-ghost" onclick="fmtText('bold')"><b>B</b></button>
+                <button class="btn btn-xs btn-ghost" onclick="fmtText('italic')"><i>I</i></button>
+                <button class="btn btn-xs btn-ghost" onclick="fmtText('underline')"><u>U</u></button>
+                <button class="btn btn-xs btn-ghost" onclick="insertList()">≡ List</button>
+                <select class="form-control" style="width:auto;padding:4px 8px;font-size:12px;background:rgba(255,255,255,0.7);" onchange="insertVar(this)">
+                  <option value="">Insert Variable…</option>
+                  <option value="{{student_name}}">Student Name</option>
+                  <option value="{{roll_no}}">Roll Number</option>
+                  <option value="{{department}}">Department</option>
+                  <option value="{{college_name}}">College Name</option>
+                  <option value="{{date}}">Today's Date</option>
+                </select>
+              </div>
+              <div id="email-body" contenteditable="true" style="padding:16px;min-height:200px;outline:none;font-size:14.5px;line-height:1.7;font-family:'DM Sans',sans-serif;color:var(--text-1);" data-placeholder="Write your message here…"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Attachments</label>
+            <div class="flex gap-8">
+              <button class="btn btn-ghost btn-sm" onclick="g('email-file').click()"><i class="fas fa-paperclip"></i> Attach Files</button>
+              <button class="btn btn-ghost btn-sm" onclick="g('email-img').click()"><i class="fas fa-image"></i> Image</button>
+              <input type="file" id="email-file" class="hidden" multiple onchange="addAttachments(this,'file')">
+              <input type="file" id="email-img" class="hidden" accept="image/*" multiple onchange="addAttachments(this,'image')">
+            </div>
+            <div id="attach-list" class="attach-list"></div>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label"><i class="fab fa-google-drive" style="color:#0f9d58;"></i> Google Drive Link</label>
+            <div class="flex gap-8">
+              <input type="text" class="form-control" id="gdrive-inp" placeholder="Paste Google Drive link…">
+              <button class="btn btn-outline btn-sm" onclick="addDriveLink()"><i class="fas fa-plus"></i> Add</button>
+            </div>
+            <div id="drive-links" style="margin-top:8px;display:flex;flex-direction:column;gap:6px;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card">
+          <div class="card-header" style="margin-bottom:14px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title" style="font-size:17px;">Templates</span></div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            ${[['exam','fa-calendar-check','Exam Notification'],['fee','fa-rupee-sign','Fee Reminder'],['result','fa-chart-bar','Results Published'],['event','fa-star','Event Invitation'],['attn','fa-exclamation-triangle','Attendance Warning'],['welcome','fa-hand-wave','Welcome Letter']].map(([k,i,l])=>`<div class="rank-row" style="background:rgba(255,255,255,0.5);" onclick="applyTemplate('${k}')"><i class="fas ${i}" style="color:var(--crimson);width:24px;font-size:15px;text-align:center;"></i><span style="font-size:13.5px;font-weight:500;color:var(--navy);">${l}</span></div>`).join('')}
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="margin-bottom:14px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title" style="font-size:17px;">Email Stats</span></div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            ${[['Sent Today',S.emailStats.today],['This Month',S.emailStats.month],['Total Sent',S.emailStats.total]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;font-size:13.5px;"><span style="color:var(--text-3);font-weight:500;">${l}</span><span style="font-weight:700;color:var(--navy);">${v}</span></div>`).join('')}
+            <div style="display:flex;justify-content:space-between;font-size:13.5px;align-items:center;"><span style="color:var(--text-3);font-weight:500;">Avg Delivery</span><span class="badge badge-success" style="border:none;">98.4%</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="margin-bottom:14px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title" style="font-size:17px;">Recently Sent</span></div>
+          <div id="recent-emails-list" style="display:flex;flex-direction:column;gap:10px;">
+            ${S.emails.slice(0,4).map(e=>`<div style="font-size:12.5px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.05);">
+              <div style="font-weight:600;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px;">${e.sub}</div>
+              <div style="color:var(--text-3);font-weight:500;">${e.count} recipients · ${e.dt}</div>
+            </div>`).join('')||'<p style="color:var(--text-4);font-size:13.5px;font-style:italic;">No emails sent yet</p>'}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;padding:0;overflow:hidden;">
+      <div style="padding:20px 22px 16px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;">
+        <span class="card-title">Sent History</span>
+        <div class="flex gap-8"><input type="text" class="form-control" style="width:180px;" placeholder="Search…"><button class="btn btn-ghost btn-sm"><i class="fas fa-download"></i></button></div>
+      </div>
+      <div class="table-wrap" style="border:none;border-radius:0;"><table>
+        <thead><tr><th>Date & Time</th><th>Subject</th><th>Recipients</th><th>Sender</th><th>Attachments</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="email-hist-tbody"></tbody>
+      </table></div>
+    </div>`;
+  renderEmailHistory();
+}
+
+function addRcptGroup() {
+  const sel=g('rcpt-group'); const key=sel.value; if(!key) return;
+  const grp=RCPT_GROUPS[key]; if(!grp) return;
+  if(!S.recipients.find(r=>r.key===key)) {
+    S.recipients.push({key,label:grp.label,count:grp.count});
+    renderRcptTags();
+  }
+  sel.value='';
+}
+function addManualRcpt(e) {
+  if(e.key!=='Enter') return;
+  const email=e.target.value.trim();
+  if(!email||!email.includes('@')) return;
+  S.recipients.push({key:email,label:email,count:1});
+  e.target.value=''; renderRcptTags();
+}
+function renderRcptTags() {
+  const container=g('rcpt-tags'), input=g('rcpt-manual');
+  container.innerHTML='';
+  S.recipients.forEach(r=>{
+    const tag=document.createElement('div');
+    tag.className='r-tag';
+    tag.style.background='rgba(155,28,28,0.1)'; tag.style.border='1px solid rgba(155,28,28,0.2)';
+    tag.innerHTML=`<strong style="font-weight:600;">${r.label}</strong> <button onclick="removeRcpt('${r.key}')" style="margin-left:4px;"><i class="fas fa-times"></i></button>`;
+    container.appendChild(tag);
+  });
+  container.appendChild(input);
+  const total=S.recipients.reduce((a,r)=>a+r.count,0);
+  g('rcpt-count').textContent=`${total} recipient${total!==1?'s':''}`;
+}
+function removeRcpt(key){S.recipients=S.recipients.filter(r=>r.key!==key);renderRcptTags();}
+
+function addAttachments(inp,type){Array.from(inp.files).forEach(f=>{S.attachments.push({name:f.name,size:f.size,type,file:f});renderAttachList();});inp.value='';}
+function renderAttachList(){const list=g('attach-list');if(!list)return;const icons={file:'📄',image:'🖼️'};list.innerHTML=S.attachments.map((a,i)=>`<div class="attach-item" style="background:rgba(255,255,255,0.5);"><span style="font-size:20px;">${icons[a.type]||'📎'}</span><div class="attach-info"><div class="attach-name" style="color:var(--navy);">${a.name}</div><div class="attach-size">${fmtSize(a.size)}</div></div><button class="attach-rm" onclick="rmAttach(${i})"><i class="fas fa-times"></i></button></div>`).join('');}
+function rmAttach(i){S.attachments.splice(i,1);renderAttachList();}
+function addDriveLink(){const link=g('gdrive-inp').value.trim();if(!link||!link.includes('drive.google.com')){toast('Enter a valid Google Drive link','error');return;}S.driveLinks.push(link);g('gdrive-inp').value='';renderDriveLinks();toast('Drive link added','success');}
+function renderDriveLinks(){const c=g('drive-links');if(!c)return;c.innerHTML=S.driveLinks.map((l,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(15,157,88,.08);border:1px solid rgba(15,157,88,.2);border-radius:8px;"><i class="fab fa-google-drive" style="color:#0f9d58;font-size:18px;"></i><a href="${l}" target="_blank" style="font-size:13px;color:var(--teal);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;">${l}</a><button class="attach-rm" onclick="rmDriveLink(${i})"><i class="fas fa-times"></i></button></div>`).join('');}
+function rmDriveLink(i){S.driveLinks.splice(i,1);renderDriveLinks();}
+
+async function sendBulkEmail() {
+  const sub=g('email-sub')?.value.trim()||'';
+  const body=g('email-body')?.innerHTML.trim()||'';
+  if(!S.recipients.length){toast('Select recipients first','error');return;}
+  if(!sub){toast('Enter subject line','error');return;}
+  if(!body||body.length<5){toast('Write email body','error');return;}
+
+  toast('Sending emails...', 'info');
+
+  // If connected to real backend, uncomment this:
+  /*
+  const res = await apiCall('sendBulkEmail', {
+    subject: sub,
+    body: body,
+    recipients: S.recipients,
+    attachments: [] // IDs would go here
+  });
+  if(!res.success) return toast(res.error, 'error');
+  */
+
+  const total=S.recipients.reduce((a,r)=>a+r.count,0);
+  const record={id:Date.now(),dt:new Date().toLocaleString('en-IN'),sub,rcpts:S.recipients.map(r=>r.label).join(', '),count:total,sender:S.user.name,atts:S.attachments.length+S.driveLinks.length,status:'Sent'};
+  S.emails.unshift(record);
+  S.emailStats.today++; S.emailStats.month++; S.emailStats.total++;
+  S.recipients=[];S.attachments=[];S.driveLinks=[];
+  g('email-sub').value=''; g('email-body').innerHTML='';
+  renderRcptTags();renderAttachList();renderDriveLinks();
+  renderEmailHistory();
+  toast(`Email sent to ${total} recipients!`,'success');
+}
+function renderEmailHistory(){const tbody=g('email-hist-tbody');if(!tbody)return;tbody.innerHTML=S.emails.length?S.emails.map(e=>`<tr><td><span class="font-mono" style="font-size:11.5px;color:var(--text-3);">${e.dt}</span></td><td style="max-width:220px;font-weight:600;color:var(--navy);">${e.sub}</td><td><span style="font-size:12.5px;">${e.rcpts}</span> <span class="badge badge-navy" style="border:none;">${e.count}</span></td><td>${e.sender}</td><td>${e.atts>0?`<span class="badge badge-info" style="border:none;">${e.atts} files</span>`:'—'}</td><td><span class="badge badge-success" style="border:none;">${e.status}</span></td><td><button class="btn btn-icon btn-ghost"><i class="fas fa-redo" style="font-size:12px;"></i></button></td></tr>`).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:40px;font-family:\'Playfair Display\',serif;font-size:16px;">No emails sent yet</td></tr>';}
+function applyTemplate(key){const t=EMAIL_TEMPLATES[key];if(!t)return;const sub=g('email-sub');const body=g('email-body');if(sub) sub.value=t.sub;if(body) body.innerHTML=t.body;toast('Template applied','success');}
+function fmtText(cmd){document.execCommand(cmd,false,null);g('email-body')?.focus();}
+function insertList(){document.execCommand('insertUnorderedList',false,null);g('email-body')?.focus();}
+function insertVar(sel){const v=sel.value;if(!v)return;g('email-body')?.focus();document.execCommand('insertText',false,v);sel.value='';}
+
+// ══ REMEDIAL ════════════════════════════════════════════════
+function renderRemedial(){
+  const sec=document.getElementById('section-remedial');
+  const topics=[
+    {icon:'📐',title:'Mathematics',sub:'Calculus, Algebra, Stats'},
+    {icon:'⚡',title:'Circuit Analysis',sub:'KVL, KCL, Theorems'},
+    {icon:'💻',title:'Programming',sub:'C, Python, Data Structures'},
+    {icon:'📡',title:'Digital Electronics',sub:'Gates, Flip-flops, FSM'},
+    {icon:'🔬',title:'Physics',sub:'Mechanics, Optics, EM'},
+    {icon:'📊',title:'DBMS',sub:'SQL, Normalization, TX'},
+    {icon:'🌐',title:'Networks',sub:'TCP/IP, OSI, Protocols'},
+    {icon:'🧮',title:'Algorithms',sub:'Sorting, Graph, DP'},
+  ];
+  sec.innerHTML=`<div class="chart-grid" style="grid-template-columns:1fr 1fr;">
+    <div class="card">
+      <div class="card-header" style="margin-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title">Remedial Topics</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">${topics.map(t=>`<div class="rank-row" style="background:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.6);" onclick="chatQuick('Explain ${t.title} with examples')"><div style="font-size:30px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${t.icon}</div><div><div style="font-size:14px;font-weight:700;color:var(--navy);">${t.title}</div><div style="font-size:11.5px;color:var(--text-3);font-weight:500;">${t.sub}</div></div></div>`).join('')}</div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;">
+      <div class="card-header" style="margin-bottom:14px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title"><i class="fas fa-robot" style="color:var(--crimson);margin-right:8px;"></i> Vidya AI Chat</span></div>
+      <div id="rem-chat" style="flex:1;height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:10px;"></div>
+      <div class="flex gap-8" style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.06);padding-top:14px;">
+        <input type="text" class="form-control" id="rem-inp" placeholder="Ask Vidya AI…" onkeydown="if(event.key==='Enter')sendRemedial()">
+        <button class="btn btn-primary" style="padding:10px 18px;" onclick="sendRemedial()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>`;
+  const chat=g('rem-chat');
+  chat.innerHTML=`<div class="chat-msg bot" style="align-self:flex-start;max-width:85%;"><div class="chat-bubble" style="background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.9);box-shadow:0 4px 10px rgba(0,0,0,0.05);color:var(--navy);border-radius:12px;border-bottom-left-radius:4px;padding:12px 16px;">👋 Hello! I'm <strong style="color:var(--crimson);">Vidya AI</strong>. Click a topic or ask me any engineering question!</div></div>`;
+}
+async function sendRemedial(){
+  const inp=g('rem-inp');const msg=inp?.value.trim();if(!msg)return;inp.value='';
+  const chat=g('rem-chat');
+  chat.innerHTML+=`<div class="chat-msg user" style="align-self:flex-end;max-width:85%;animation:fadeIn 0.2s;"><div class="chat-bubble" style="background:var(--crimson);color:#fff;border-radius:12px;border-bottom-right-radius:4px;padding:12px 16px;box-shadow:0 4px 10px rgba(155,28,28,0.2);">${msg}</div></div>`;
+  
+  const typingId = 'rem-t-' + Date.now();
+  chat.innerHTML+=`<div class="chat-msg bot" id="${typingId}" style="align-self:flex-start;max-width:85%;animation:fadeIn 0.2s;"><div class="chat-bubble" style="background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.8);border-radius:12px;border-bottom-left-radius:4px;padding:12px 16px;color:var(--text-3);"><i class="fas fa-circle-notch fa-spin"></i> Thinking…</div></div>`;
+  chat.scrollTop=chat.scrollHeight;
+  
+  // Call the Apps Script backend instead of OpenRouter directly!
+  const res = await apiCall('chat', { message: msg });
+  
+  document.getElementById(typingId)?.remove();
+  
+  if (res.success) {
+    chat.innerHTML+=`<div class="chat-msg bot" style="align-self:flex-start;max-width:85%;animation:fadeIn 0.2s;"><div class="chat-bubble" style="background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.9);box-shadow:0 4px 10px rgba(0,0,0,0.05);color:var(--navy);border-radius:12px;border-bottom-left-radius:4px;padding:12px 16px;line-height:1.6;">${res.reply.replace(/\n/g,'<br>')}</div></div>`;
+  } else {
+    chat.innerHTML+=`<div class="chat-msg bot" style="align-self:flex-start;max-width:85%;animation:fadeIn 0.2s;"><div class="chat-bubble" style="background:rgba(254,226,226,0.8);border:1px solid rgba(153,27,27,0.2);color:var(--crimson);border-radius:12px;border-bottom-left-radius:4px;padding:12px 16px;">⚠️ ${res.error || "Network error. Please try again."}</div></div>`;
+  }
+  chat.scrollTop=chat.scrollHeight;
+}
+
+// ══ SETTINGS ════════════════════════════════════════════════
+function renderSettings(){
+  const sec=document.getElementById('section-settings');
+  const u=S.user||{};
+  sec.innerHTML=`<div class="form-row" style="align-items:start;">
+    <div class="card">
+      <div class="card-header" style="margin-bottom:20px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title">Profile Settings</span></div>
+      <div style="text-align:center;margin-bottom:26px;">
+        <div class="user-avatar" style="width:80px;height:80px;font-size:32px;margin:0 auto 14px;box-shadow:0 8px 20px rgba(212,168,83,0.3);border:2px solid #fff;">${u.name?.charAt(0)||'U'}</div>
+        <button class="btn btn-ghost btn-sm"><i class="fas fa-camera"></i> Change Photo</button>
+      </div>
+      <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-control" value="${u.name||''}"></div>
+      <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-control" value="${u.email||''}"></div>
+      <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-control" placeholder="+91 9XXXXXXXXX"></div>
+      <button class="btn btn-primary" onclick="toast('Profile saved!','success')" style="margin-top:10px;"><i class="fas fa-save"></i> Save Changes</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="card">
+        <div class="card-header" style="margin-bottom:20px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title">Change Password</span></div>
+        <div class="form-group"><label class="form-label">Current Password</label><div class="pw-wrap"><input type="password" class="form-control"><button class="pw-toggle"><i class="fas fa-eye"></i></button></div></div>
+        <div class="form-group"><label class="form-label">New Password</label><div class="pw-wrap"><input type="password" class="form-control"><button class="pw-toggle"><i class="fas fa-eye"></i></button></div></div>
+        <div class="form-group"><label class="form-label">Confirm Password</label><div class="pw-wrap"><input type="password" class="form-control"><button class="pw-toggle"><i class="fas fa-eye"></i></button></div></div>
+        <button class="btn btn-outline" onclick="toast('Password updated!','success')" style="margin-top:10px;">Update Password</button>
+      </div>
+      <div class="card">
+        <div class="card-header" style="margin-bottom:20px;border-bottom:1px solid rgba(0,0,0,0.06);"><span class="card-title">System Settings</span></div>
+        <div class="form-group"><label class="form-label">Institution Name</label><input type="text" class="form-control" value="${APP_CONFIG.COLLEGE}"></div>
+        <div class="form-group"><label class="form-label">Apps Script API URL</label><input type="text" class="form-control" id="api-url-inp" value="${APP_CONFIG.API_BASE}" placeholder="https://script.google.com/macros/s/..."></div>
+        <div class="form-group"><label class="form-label">Google Drive Folder Link</label><input type="text" class="form-control" placeholder="https://drive.google.com/drive/folders/..."></div>
+        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:10px;"><i class="fas fa-save"></i> Save Settings</button>
+      </div>
+    </div>
+  </div>`;
+}
+function saveSettings(){const url=g('api-url-inp')?.value;if(url) localStorage.setItem('api_url',url);toast('Settings saved!','success');}
+
+// ══ NOTIFICATIONS ════════════════════════════════════════════
+function buildNotifications(){
+  S.notifications=[
+    {title:'Mani Kandan registered',body:'New student awaiting approval',time:'2h ago',unread:true},
+    {title:'4 fee defaulters',body:'Students with overdue fee payments',time:'5h ago',unread:true},
+    {title:'Results published',body:'Sem 3 CSE results are live',time:'1d ago',unread:false},
+  ];
+  if(S.emails.length) S.notifications.unshift({title:'Email sent!',body:`Email to ${S.emails[0].count} recipients`,time:'Just now',unread:true});
+  renderNotifPanel();
+}
+function renderNotifPanel(){
+  const list=g('notif-list'),pip=g('notif-pip');
+  const unread=S.notifications.filter(n=>n.unread).length;
+  if(pip) pip.style.display=unread>0?'block':'none';
+  if(!list) return;
+  list.innerHTML=S.notifications.map(n=>`<div class="notif-item ${n.unread?'unread':''}" style="border-bottom:1px solid rgba(0,0,0,0.06);"><div class="notif-item-title" style="font-weight:600;color:var(--navy);">${n.title}</div><div class="notif-item-body" style="color:var(--text-2);">${n.body}</div><div class="notif-item-time" style="font-weight:500;">${n.time}</div></div>`).join('');
+}
+function toggleNotifPanel(){g('notif-panel').classList.toggle('open');}
+function closeNotifPanel(){g('notif-panel').classList.remove('open');}
+
+// ══ CHATBOT (FLOATING) ══════════════════════════════════════
+let chatOpen=false;
+function toggleChat(){
+  chatOpen=!chatOpen;
+  g('chatbot-window').classList.toggle('hidden',!chatOpen);
+  if(chatOpen&&g('chat-msgs').children.length===0) addBotMsg('Vanakkam! 🙏 I\'m <strong>Vidya AI</strong>, your academic assistant. Ask me anything!');
+}
+async function sendChat(){
+  const inp=g('chat-inp'), msg=inp?.value.trim(); if(!msg) return;
+  inp.value='';
+  const container=g('chat-msgs');
+  container.innerHTML+=`<div class="chat-msg user" style="animation:fadeIn 0.2s;"><div class="chat-bubble" style="box-shadow:0 4px 10px rgba(155,28,28,0.2);">${msg}</div></div>`;
+  const typingId = 'float-t-' + Date.now();
+  container.innerHTML+=`<div class="chat-msg bot" id="${typingId}" style="animation:fadeIn 0.2s;"><div class="chat-bubble" style="color:var(--text-3);"><i class="fas fa-circle-notch fa-spin"></i></div></div>`;
+  container.scrollTop=container.scrollHeight;
+  
+  // Call backend proxy
+  const res = await apiCall('chat', { message: msg });
+  
+  document.getElementById(typingId)?.remove();
+  
+  if (res.success) {
+    addBotMsg(res.reply.replace(/\n/g,'<br>'));
+  } else {
+    container.innerHTML+=`<div class="chat-msg bot"><div class="chat-bubble" style="background:rgba(254,226,226,0.8);color:var(--crimson);">⚠️ ${res.error || "Network error. Please try again."}</div></div>`;
+    container.scrollTop=container.scrollHeight;
+  }
+}
+function chatQuick(msg){const inp=g('chat-inp');if(inp)inp.value=msg;if(!chatOpen)toggleChat();sendChat();}
+function addBotMsg(msg){const c=g('chat-msgs');c.innerHTML+=`<div class="chat-msg bot" style="animation:fadeIn 0.2s;"><div class="chat-bubble" style="box-shadow:0 4px 10px rgba(0,0,0,0.05);color:var(--navy);font-weight:500;">${msg}</div></div>`;c.scrollTop=c.scrollHeight;}
+
+// ══ CHART HELPER ═════════════════════════════════════════════
+function mkChart(id, type, labels, datasets, options={}) {
+  const canvas = document.getElementById(id); 
+  if(!canvas) return;
+
+  // FIX: Chart.js infinite shrink bug prevention
+  if (!canvas.parentElement.classList.contains('chart-wrapper')) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'chart-wrapper';
+    wrapper.style.position = 'relative';
+    wrapper.style.height = '240px'; 
+    wrapper.style.width = '100%';
+    canvas.parentNode.insertBefore(wrapper, canvas);
+    wrapper.appendChild(canvas);
+  }
+
+  if(S.charts[id]) S.charts[id].destroy();
+  
+  S.charts[id] = new Chart(canvas, {
+    type,
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { font: { size: 11.5, family: "'DM Sans', sans-serif" }, boxWidth: 12 } }
+      },
+      ...options
+    }
+  });
+}
+
+// ══ UTILITIES ════════════════════════════════════════════════
+function g(id) { return document.getElementById(id); }
+function toast(msg, type='info') {
+  const container=g('toast-container');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  const icons={success:'✓',error:'✕',info:'ℹ',warning:'⚠'};
+  t.innerHTML=`<span class="toast-icon">${icons[type]||'•'}</span><span>${msg}</span>`;
+  container.appendChild(t);
+  setTimeout(()=>{t.classList.add('fade-out');setTimeout(()=>t.remove(),300);},3500);
+}
+function openModal(id)  { g(id)?.classList.remove('hidden'); }
+function closeModal(id) { g(id)?.classList.add('hidden'); }
+function toggleSidebar(){ g('sidebar')?.classList.toggle('open'); }
+function switchTab(btn,tabId) {
+  const parent=btn.closest('.section,.card');
+  if(parent){parent.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));parent.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));}
+  btn.classList.add('active');
+  const pane=g(`tab-${tabId}`); if(pane) pane.classList.add('active');
+}
+function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
+function dragLeave(e) { e.currentTarget.classList.remove('dragover'); }
+function parseFile(file,cb) {
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='csv'){Papa.parse(file,{header:true,skipEmptyLines:true,complete:r=>cb(r.data)});}
+  else{const r=new FileReader();r.onload=e=>{const wb=XLSX.read(e.target.result,{type:'array'});const sh=wb.Sheets[wb.SheetNames[0]];cb(XLSX.utils.sheet_to_json(sh,{defval:''}));};r.readAsArrayBuffer(file);}
+}
+function dlFile(name,content,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+function fmtSize(b){if(b<1024)return`${b} B`;if(b<1048576)return`${(b/1024).toFixed(1)} KB`;return`${(b/1048576).toFixed(1)} MB`;}
+
+// Close modal on overlay click
+document.addEventListener('click',e=>{
+  if(e.target.classList.contains('modal-overlay')) {
+    e.target.classList.add('hidden');
+    S.recipients=[]; renderRcptTags&&renderRcptTags();
+  }
+});
+
+// ══ INIT ═════════════════════════════════════════════════════
+const saved = localStorage.getItem('cits_session');
+if(saved) { try { S.user=JSON.parse(saved); initApp(); } catch(e){ localStorage.removeItem('cits_session'); } }
+document.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date().toISOString().split('T')[0];
+  document.querySelectorAll('input[type=date]').forEach(i=>{if(!i.value) i.value=today;});
+});
+</script>
+</body>
+</html>
